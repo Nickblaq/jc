@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Innertube, UniversalCache } from 'youtubei.js'
+import { ChannelResult, VideoItem } from '@/types'
 
 // Singleton — reuse the session across requests (avoids re-initialising on every call)
 let _yt: Innertube | null = null
