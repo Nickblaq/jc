@@ -14,29 +14,6 @@ async function getYT(): Promise<Innertube> {
   return _yt
 }
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
-export interface VideoItem {
-  id: string
-  title: string
-  viewCount: string
-  viewCountRaw: number
-  publishedTime: string
-  duration: string
-  thumbnail: string
-  url: string
-}
-
-export interface ChannelResult {
-  channelId: string
-  channelName: string
-  channelHandle: string
-  subscriberCount: string
-  channelThumbnail: string
-  channelBanner: string
-  videos: VideoItem[]
-}
-
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function parseViewCount(text: string | undefined): number {
