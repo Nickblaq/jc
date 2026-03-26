@@ -1,5 +1,5 @@
 
-use client'
+'use client'
 
 import { useState, useRef } from 'react'
 import { ChannelResult, VideoItem } from '@/types'
