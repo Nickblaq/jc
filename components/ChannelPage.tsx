@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import type { ChannelResult, VideoItem } from '../api/channel/route'
+import type { ChannelResult, VideoItem } from '@/api/channel/route'
 
 // ─── Rank medal colours ───────────────────────────────────────────────────────
 const RANK = ['#FFD700', '#C0C0C0', '#CD7F32', '#888', '#666']
