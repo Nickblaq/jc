@@ -58,6 +58,7 @@ export interface Video {
   channelName: string;
   channelId: string;
   url: string;
+  downloadUrl?: string; // Optional: pre-fetched download URL
 }
 
 export type SortType = 'popular' | 'latest';
