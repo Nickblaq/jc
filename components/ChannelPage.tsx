@@ -522,6 +522,7 @@ function DownloadPanel({
           ✕ {dlState?.error || 'Download failed'}
         </div>
       )}
+      <VideoCard video={activeVideo} />
 
       {/* Metadata */}
       <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid #141414', display: 'flex', gap: 16 }}>
