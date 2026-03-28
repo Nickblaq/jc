@@ -27,12 +27,12 @@ export function useSearch() {
     
     try {
       // Search for channel
-      const channelRes = await fetch(`/api/youtube/channel?q=${encodeURIComponent(query)}`);
+      const channelRes = await fetch(`/api/views/?q=${encodeURIComponent(query)}`);
       if (!channelRes.ok) throw new Error('Channel not found');
       const channel = await channelRes.json();
       
       // Get videos with current sort
-      const videosRes = await fetch(`/api/youtube/channel/${channel.id}/videos?sort=${sortType}`);
+      const videosRes = await fetch(`/api/views/${channel.id}?sort=${sortType}`);
       if (!videosRes.ok) throw new Error('Failed to fetch videos');
       const videos = await videosRes.json();
       
@@ -59,7 +59,7 @@ export function useSearch() {
       setState(prev => ({ ...prev, isLoading: true }));
       
       try {
-        const videosRes = await fetch(`/api/youtube/channel/${state.channel!.id}/videos?sort=${newSort}`);
+        const videosRes = await fetch(`/api/views/${state.channel!.id}?sort=${newSort}`);
         if (!videosRes.ok) throw new Error('Failed to fetch videos');
         const videos = await videosRes.json();
         
