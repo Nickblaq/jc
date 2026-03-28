@@ -6,7 +6,7 @@ import SearchBar from '@/components/SearchBar';
 import SortToggle from '@/components/SortToggle';
 import VideoGrid from '@/components/VideoGrid';
 import { useSearch } from '@/hooks/useSearch';
-import { AlertCircle, Youtube } from 'lucide-react';
+import { AlertCircle, TvMinimalPlay} from 'lucide-react';
 
 export default function VideoList() {
   const {
@@ -25,7 +25,7 @@ export default function VideoList() {
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">
-            <Youtube className="w-12 h-12 text-red-600" />
+            <TvMinimalPlay className="w-12 h-12 text-red-600" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             YouTube Channel Viewer
