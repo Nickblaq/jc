@@ -10,7 +10,7 @@ interface SortToggleProps {
   disabled?: boolean;
 }
 
-export function SortToggle({ sortType, onChange, disabled }: SortToggleProps) {
+export default function SortToggle({ sortType, onChange, disabled }: SortToggleProps) {
   return (
     <div className="flex gap-2 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
       <button
