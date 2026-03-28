@@ -37,3 +37,27 @@ export interface AgentOutput {
   seoScore: number
   insights: string[]
 }
+
+
+export interface ChannelInfo {
+  id: string;
+  name: string;
+  handle?: string;
+  avatar?: string;
+  subscriberCount?: string;
+  description?: string;
+}
+
+export interface Video {
+  id: string;
+  title: string;
+  thumbnail: string;
+  viewCount: string;
+  publishedAt: string;
+  duration?: string;
+  channelName: string;
+  channelId: string;
+  url: string;
+}
+
+export type SortType = 'popular' | 'latest';
