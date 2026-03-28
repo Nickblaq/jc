@@ -1,4 +1,3 @@
-
 import { NextRequest } from 'next/server'
 import { Innertube, UniversalCache } from 'youtubei.js'
 
@@ -23,7 +22,7 @@ async function getYT(): Promise<Innertube> {
 
 export async function GET(req: NextRequest) {
   const videoId = req.nextUrl.searchParams.get('id')?.trim()
-  const type    = (req.nextUrl.searchParams.get('type') || 'video+audio') as 'video+audio' | 'video' | 'audio'
+  const type    = (req.nextUrl.searchParams.get('type') || 'videoandaudio') as 'videoandaudio' | 'video' | 'audio'
   const quality = req.nextUrl.searchParams.get('quality') || 'best'
 
   if (!videoId) {
