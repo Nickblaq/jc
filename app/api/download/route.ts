@@ -1,7 +1,6 @@
 
 import { NextRequest } from 'next/server'
 import { Innertube, UniversalCache } from 'youtubei.js'
-import { DownloadOptions } from 'youtubei.js'
 
 export const runtime = 'nodejs'
 export const maxDuration = 300
@@ -51,7 +50,7 @@ export async function GET(req: NextRequest) {
     //   type:    'video+audio' | 'video' | 'audio'
     //   quality: 'best' | 'bestefficiency' | '144p' | '360p' | '720p' | '1080p' etc.
     //   format:  'mp4' | 'webm' | 'any'
-    const downloadOptions: DownloadOptions = {
+    const downloadOptions = {
       type,
       quality,
       format: 'mp4',
