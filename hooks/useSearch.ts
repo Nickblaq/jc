@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { ChannelInfo, Video, SortType } from '@/lib/youtube/types';
+import { ChannelInfo, Video, SortType } from '@/types';
 
 interface SearchState {
   channel: ChannelInfo | null;
