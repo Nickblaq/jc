@@ -1,13 +1,13 @@
 
 import { Video } from '@/types';
-import { VideoCard } from './VideoCard';
+import VideoCard from '@/compnents/VideoCard';
 
 interface VideoGridProps {
   videos: Video[];
   channelName?: string;
 }
 
-export function VideoGrid({ videos, channelName }: VideoGridProps) {
+export default function VideoGrid({ videos, channelName }: VideoGridProps) {
   if (videos.length === 0) {
     return (
       <div className="text-center py-12">
