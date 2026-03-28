@@ -4,23 +4,17 @@ import { Innertube } from 'youtubei.js';
 
 export async function GET(request: NextRequest) {
   try {
-    const url = request.nextUrl.searchParams.get('url');
-    
-    if (!url) {
-      return NextResponse.json(
-        { error: 'Video URL is required' },
-        { status: 400 }
-      );
-    }
 
-    // Extract video ID from URL
-    const videoId = extractVideoId(url);
-    if (!videoId) {
-      return NextResponse.json(
-        { error: 'Invalid YouTube URL' },
-        { status: 400 }
-      );
-    }
+    const videoId = req.nextUrl.searchParams.get('id')?.trim()
+  const type    = (req.nextUrl.searchParams.get('type') || 'video+audio') as 'video+audio' | 'video' | 'audio'
+  const quality = req.nextUrl.searchParams.get('quality') || 'best'
+
+  if (!videoId) {
+    return new Response(JSON.stringify({ error: 'Missing video ID' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' },
+    })
+  }
 
     // Create YouTube client
     const youtube = await Innertube.create();
