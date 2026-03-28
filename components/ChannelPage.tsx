@@ -3,6 +3,7 @@
 
 import { useState, useRef } from 'react'
 import { ChannelResult, VideoItem } from '@/types'
+import VideoCard from '@/components/VideoCard'
 
 const RANK_COLOR = ['#FFD700', '#C0C0C0', '#CD7F32', '#666', '#555']
 const RANK_LABEL = ['#1', '#2', '#3', '#4', '#5']
