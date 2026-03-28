@@ -1,4 +1,3 @@
-
 import { NextRequest } from 'next/server'
 import { Innertube, UniversalCache } from 'youtubei.js'
 
@@ -25,9 +24,9 @@ function errorResponse(message: string, status = 500) {
 }
 
 export async function GET(req: NextRequest) {
-    const videoId = req.nextUrl.searchParams.get('id')?.trim()
-  const type    = (req.nextUrl.searchParams.get('type') || 'video+audio') as 'video+audio' | 'video' | 'audio'
-  const quality = req.nextUrl.searchParams.get('quality') || 'best'
+  const videoId = req.nextUrl.searchParams.get('id')?.trim()
+  const quality = (req.nextUrl.searchParams.get('quality') ?? 'best') 
+  const type    = (req.nextUrl.searchParams.get('type')    ?? 'video+audio')
 
   if (!videoId) return errorResponse('Missing video ID', 400)
 
@@ -65,7 +64,10 @@ export async function GET(req: NextRequest) {
     //   - For video/audio only: chunked 10MB downloads via &range= param
     //     (avoids YouTube throttling on adaptive streams)
     //   - Returns ReadableStream<Uint8Array> ready to pipe
-    const stream = await info.download(downloadOptions)
+    const stream = await info.download(videoId, downloadOptions)
+
+       // Convert ReadableStream to Node.js Readable for Next.js response
+    const nodeStream = await streamToNodeStream(stream);
 
     // ── Step 5: Build filename ──────────────────────────────────────────────
     const title = info.basic_info?.title ?? videoId
