@@ -1,7 +1,7 @@
 
 import VideoList from "@/components/VideoList"
 
-export default function VidoeStream() {
+export default function Views() {
 
   return (
       <VideoList />
