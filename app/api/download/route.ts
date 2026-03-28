@@ -1,7 +1,7 @@
 
 import { NextRequest } from 'next/server'
 import { Innertube, UniversalCache } from 'youtubei.js'
-import type { DownloadOptions } from 'youtubei.js'
+import { DownloadOptions } from 'youtubei.js'
 
 export const runtime = 'nodejs'
 export const maxDuration = 300
