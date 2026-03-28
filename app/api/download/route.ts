@@ -1,8 +1,10 @@
+
 import { NextRequest } from 'next/server'
 import { Innertube, UniversalCache } from 'youtubei.js'
+import type { DownloadOptions } from 'youtubei.js'
 
 export const runtime = 'nodejs'
-export const maxDuration = 300 // 5 min — enough for large videos
+export const maxDuration = 300
 
 let _yt: Innertube | null = null
 
@@ -16,107 +18,89 @@ async function getYT(): Promise<Innertube> {
   return _yt
 }
 
-// ─── Format options ───────────────────────────────────────────────────────────
-// type: 'videoandaudio' | 'video' | 'audio'
-// quality: 'best' | 'bestefficiency' | '1080p' | '720p' | '480p' | '360p'
+function errorResponse(message: string, status = 500) {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: { 'Content-Type': 'application/json' },
+  })
+}
 
 export async function GET(req: NextRequest) {
   const videoId = req.nextUrl.searchParams.get('id')?.trim()
-  const type    = (req.nextUrl.searchParams.get('type') || 'videoandaudio') as 'videoandaudio' | 'video' | 'audio'
-  const quality = req.nextUrl.searchParams.get('quality') || 'best'
+  const quality = (req.nextUrl.searchParams.get('quality') ?? 'best') as DownloadOptions['quality']
+  const type    = (req.nextUrl.searchParams.get('type')    ?? 'video+audio') as DownloadOptions['type']
 
-  if (!videoId) {
-    return new Response(JSON.stringify({ error: 'Missing video ID' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    })
-  }
+  if (!videoId) return errorResponse('Missing video ID', 400)
 
   try {
     const yt = await getYT()
 
-    // ── Get video info + pick format ─────────────────────────────────────────
-    const info = await yt.getBasicInfo(videoId, { client: 'TV' })
+    // ── Step 1: Get full video info ─────────────────────────────────────────
+    // getInfo() fetches both player response + watch-next — needed for cpn
+    // which FormatUtils.download() uses internally
+    const info = await yt.getInfo(videoId)
 
-    const basicInfo = info.basic_info
-    const safeTitle = (basicInfo?.title || videoId)
-      .replace(/[^\w\s\-().]/g, '')  // strip special chars for filename
-      .replace(/\s+/g, '_')
-      .slice(0, 80)
+    // ── Step 2: Check playability ───────────────────────────────────────────
+    const status = info.playability_status?.status
+    if (status === 'UNPLAYABLE') return errorResponse('This video is unplayable', 403)
+    if (status === 'LOGIN_REQUIRED') return errorResponse('This video requires login', 403)
+    if (status === 'ERROR') return errorResponse('This video is unavailable', 404)
 
-    // chooseFormat picks the best match — falls back gracefully if exact quality unavailable
-    const format = info.chooseFormat({
+    // ── Step 3: Build download options ─────────────────────────────────────
+    // These map directly to FormatUtils.download() → chooseFormat() options:
+    //   type:    'video+audio' | 'video' | 'audio'
+    //   quality: 'best' | 'bestefficiency' | '144p' | '360p' | '720p' | '1080p' etc.
+    //   format:  'mp4' | 'webm' | 'any'
+    const downloadOptions: DownloadOptions = {
       type,
-      quality: quality as any,
+      quality,
       format: 'mp4',
-    })
-
-    if (!format) {
-      return new Response(JSON.stringify({ error: 'No suitable format found for this video' }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      })
     }
 
-    // ── Decipher streaming URL ───────────────────────────────────────────────
-    // This runs YouTube's obfuscated JS to get a valid, signed URL
-    const url = await format.decipher(yt.session.player)
+    // ── Step 4: Call info.download() ───────────────────────────────────────
+    // This is the correct high-level API:
+    //   - Internally calls FormatUtils.download()
+    //   - Handles format selection via chooseFormat()
+    //   - Handles URL deciphering
+    //   - For video+audio: single fetch → returns response.body directly
+    //   - For video/audio only: chunked 10MB downloads via &range= param
+    //     (avoids YouTube throttling on adaptive streams)
+    //   - Returns ReadableStream<Uint8Array> ready to pipe
+    const stream = await info.download(downloadOptions)
 
-    if (!url) {
-      return new Response(JSON.stringify({ error: 'Could not decipher streaming URL' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
+    // ── Step 5: Build filename ──────────────────────────────────────────────
+    const title = info.basic_info?.title ?? videoId
+    const safeTitle = title
+      .replace(/[^a-zA-Z0-9\s\-_.()]/g, '')
+      .replace(/\s+/g, '_')
+      .slice(0, 100)
 
-    // ── Determine file extension + MIME ──────────────────────────────────────
-    const ext = type === 'audio' ? 'm4a' : 'mp4'
-    const mime = type === 'audio' ? 'audio/mp4' : 'video/mp4'
+    const ext      = type === 'audio' ? 'm4a' : 'mp4'
+    const mime     = type === 'audio' ? 'audio/mp4' : 'video/mp4'
     const filename = `${safeTitle}.${ext}`
 
-    // ── Stream from YouTube → client ─────────────────────────────────────────
-    // We proxy the stream — YouTube blocks direct browser downloads due to CORS + signed URLs
-    const upstream = await fetch(url, {
+    // ── Step 6: Stream directly to client ──────────────────────────────────
+    // The ReadableStream<Uint8Array> from info.download() is spec-compliant
+    // and can be passed directly as the Response body — no buffering needed
+    return new Response(stream as unknown as ReadableStream, {
       headers: {
-        // Mimic a browser request — YouTube checks these
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Referer': 'https://www.youtube.com/',
-        'Origin': 'https://www.youtube.com',
+        'Content-Type':        mime,
+        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Cache-Control':       'no-store',
+        'X-Video-Title':       title,
+        'X-Video-Id':          videoId,
       },
     })
 
-    if (!upstream.ok || !upstream.body) {
-      return new Response(JSON.stringify({ error: `Upstream fetch failed: ${upstream.status}` }), {
-        status: 502,
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    // Forward content-length if YouTube provides it (enables progress bar in browser)
-    const contentLength = upstream.headers.get('content-length')
-
-    const headers: Record<string, string> = {
-      'Content-Type': mime,
-      // attachment → triggers browser Save dialog  |  inline → streams in browser player
-      'Content-Disposition': `attachment; filename="${filename}"`,
-      'Cache-Control': 'no-store',
-      'X-Video-Title': basicInfo?.title || videoId,
-    }
-
-    if (contentLength) {
-      headers['Content-Length'] = contentLength
-    }
-
-    // Pipe the ReadableStream straight to the client response
-    return new Response(upstream.body, { headers })
-
   } catch (err: any) {
-    console.error('[download route error]', err)
+    console.error('[download error]', err?.message ?? err)
     _yt = null
 
-    return new Response(
-      JSON.stringify({ error: err?.message || 'Download failed' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    )
+    // Surface specific youtubei.js errors clearly
+    const msg: string = err?.message ?? 'Download failed'
+    if (msg.includes('UNPLAYABLE'))    return errorResponse('Video is unplayable', 403)
+    if (msg.includes('LOGIN_REQUIRED'))return errorResponse('Video requires login', 403)
+    if (msg.includes('No matching'))   return errorResponse('No format available for these options', 404)
+    return errorResponse(msg)
   }
 }
