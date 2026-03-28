@@ -8,7 +8,7 @@ import { VideoGrid } from '@/components/VideoGrid';
 import { useSearch } from '@/hooks/useSearch';
 import { AlertCircle, Youtube } from 'lucide-react';
 
-export default function Home() {
+export default function VideoList() {
   const {
     channel,
     videos,
