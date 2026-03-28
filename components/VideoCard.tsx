@@ -9,13 +9,13 @@ interface VideoCardProps {
   video: Video;
 }
 
-export function VideoCard({ video }: VideoCardProps) {
+export default function VideoCard({ video }: VideoCardProps) {
   const handleDownload = async (e: React.MouseEvent) => {
     e.preventDefault(); // Prevent opening video link
     e.stopPropagation(); // Stop event bubbling
 
     try {
-      const response = await fetch(`/api/youtube/download?url=${encodeURIComponent(video.url)}`);
+      const response = await fetch(`/api/downstream?url=${encodeURIComponent(video.url)}`);
       
       if (!response.ok) {
         const error = await response.json();
