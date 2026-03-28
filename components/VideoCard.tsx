@@ -1,6 +1,8 @@
 
+'use client';
+
 import Image from 'next/image';
-import { Play, Eye, Calendar } from 'lucide-react';
+import { Play, Eye, Calendar, Download } from 'lucide-react';
 import { Video } from '@/types';
 
 interface VideoCardProps {
@@ -8,6 +10,45 @@ interface VideoCardProps {
 }
 
 export function VideoCard({ video }: VideoCardProps) {
+  const handleDownload = async (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent opening video link
+    e.stopPropagation(); // Stop event bubbling
+
+    try {
+      const response = await fetch(`/api/youtube/download?url=${encodeURIComponent(video.url)}`);
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Download failed');
+      }
+
+      // Create blob from response
+      const blob = await response.blob();
+      
+      // Create download link
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      
+      // Extract filename from Content-Disposition header or use video title
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `${video.title}.mp4`;
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename="(.+)"/);
+        if (match) filename = match[1];
+      }
+      
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (error) {
+      console.error('Download failed:', error);
+      alert(error instanceof Error ? error.message : 'Failed to download video');
+    }
+  };
+
   return (
     <a
       href={video.url}
@@ -33,6 +74,15 @@ export function VideoCard({ video }: VideoCardProps) {
             {video.duration}
           </span>
         )}
+        
+        {/* Download button overlay */}
+        <button
+          onClick={handleDownload}
+          className="absolute top-2 right-2 p-2 bg-black/75 hover:bg-blue-600 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+          title="Download video"
+        >
+          <Download className="w-4 h-4 text-white" />
+        </button>
       </div>
       
       <div className="p-4">
