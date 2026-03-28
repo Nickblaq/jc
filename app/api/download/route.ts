@@ -25,9 +25,9 @@ function errorResponse(message: string, status = 500) {
 }
 
 export async function GET(req: NextRequest) {
-  const videoId = req.nextUrl.searchParams.get('id')?.trim()
-  const quality = (req.nextUrl.searchParams.get('quality') ?? 'best')
-  const type    = (req.nextUrl.searchParams.get('type')    ?? 'video+audio')
+    const videoId = req.nextUrl.searchParams.get('id')?.trim()
+  const type    = (req.nextUrl.searchParams.get('type') || 'video+audio') as 'video+audio' | 'video' | 'audio'
+  const quality = req.nextUrl.searchParams.get('quality') || 'best'
 
   if (!videoId) return errorResponse('Missing video ID', 400)
 
