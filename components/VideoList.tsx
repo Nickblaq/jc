@@ -2,9 +2,9 @@
 
 'use client';
 
-import SearchBar from '@/components/SearchBar';
-import SortToggle from '@/components/SortToggle';
-import VideoGrid from '@/components/VideoGrid';
+import SearchBar from './components/SearchBar';
+import SortToggle from './components/SortToggle';
+import VideoGrid from './components/VideoGrid';
 import { useSearch } from '@/hooks/useSearch';
 import { AlertCircle, TvMinimalPlay} from 'lucide-react';
 
