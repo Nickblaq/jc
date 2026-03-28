@@ -10,7 +10,7 @@ interface SearchBarProps {
   isLoading: boolean;
 }
 
-export function SearchBar({ onSearch, isLoading }: SearchBarProps) {
+export default function SearchBar({ onSearch, isLoading }: SearchBarProps) {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (e: FormEvent) => {
