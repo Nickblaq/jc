@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     };
     
     // Get the readable stream using YouTube.js
-    const stream = await youtube.download(videoId, downloadOptions);
+    const stream = await youtube.download(videoId);
     
     // Convert ReadableStream to Node.js Readable for Next.js response
     const nodeStream = await streamToNodeStream(stream);
