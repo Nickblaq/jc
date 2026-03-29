@@ -40,9 +40,6 @@ export async function GET(request: NextRequest) {
       type: 'video+audio',
       format: 'mp4',
     };
-
-    const ext      = type === 'audio' ? 'm4a' : 'mp4'
-    const mime     = type === 'audio' ? 'audio/mp4' : 'video/mp4'
     
     // Get the readable stream using YouTube.js
     const stream = await youtube.download(videoId, downloadOptions);
