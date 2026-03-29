@@ -1,105 +1,97 @@
-import { NextRequest } from 'next/server'
-import { Innertube, UniversalCache } from 'youtubei.js'
+import { NextRequest, NextResponse } from 'next/server';
+import { Innertube } from 'youtubei.js';
 
-export const runtime = 'nodejs'
-export const maxDuration = 300
-
-let _yt: Innertube | null = null
-
-async function getYT(): Promise<Innertube> {
-  if (!_yt) {
-    _yt = await Innertube.create({
-      cache: new UniversalCache(false),
-      generate_session_locally: true,
-    })
-  }
-  return _yt
-}
-
-function errorResponse(message: string, status = 500) {
-  return new Response(JSON.stringify({ error: message }), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  })
-}
-
-export async function GET(req: NextRequest) {
-  const videoId = req.nextUrl.searchParams.get('id')?.trim()
-
-  if (!videoId) return errorResponse('Missing video ID', 400)
-
+export async function GET(request: NextRequest) {
   try {
-    const yt = await getYT()
+    const videoId = request.nextUrl.searchParams.get('id')?.trim();
+    
+    if (!videoId) {
+      return NextResponse.json(
+        { error: 'Video ID is required' },
+        { status: 400 }
+      );
+    }
 
-    // ── Step 1: Get full video info ─────────────────────────────────────────
-    // getInfo() fetches both player response + watch-next — needed for cpn
-    // which FormatUtils.download() uses internally
-    const info = await yt.getInfo(videoId)
+    // Validate video ID format (11 characters, alphanumeric with underscores/dashes)
+    if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+      return NextResponse.json(
+        { error: 'Invalid video ID format' },
+        { status: 400 }
+      );
+    }
 
-    // ── Step 2: Check playability ───────────────────────────────────────────
-    const status = info.playability_status?.status
-    if (status === 'UNPLAYABLE') return errorResponse('This video is unplayable', 403)
-    if (status === 'LOGIN_REQUIRED') return errorResponse('This video requires login', 403)
-    if (status === 'ERROR') return errorResponse('This video is unavailable', 404)
+    // Create YouTube client
+    const youtube = await Innertube.create();
+    
+    // Get video info
+    const video = await youtube.getInfo(videoId);
+    
+    // Check if video is playable
+    if (!video.streaming_data) {
+      throw new Error('Streaming data not available for this video');
+    }
 
-    // ── Step 3: Build download options ─────────────────────────────────────
-    // These map directly to FormatUtils.download() → chooseFormat() options:
-    //   type:    'video+audio' | 'video' | 'audio'
-    //   quality: 'best' | 'bestefficiency' | '144p' | '360p' | '720p' | '1080p' etc.
-    //   format:  'mp4' | 'webm' | 'any'
+    // Get video title for filename (sanitize)
+    const filename = video.basic_info.title?.replace(/[^\w\s]/gi, '') || 'video';
+    
+    // Set download options
     const downloadOptions = {
-      quality: 'best',           // or '1080p', '720p', etc.
-      type: 'video+audio',       // combined format
-      format: 'mp4',             // preferred container
+      quality: 'best',
+      type: 'video+audio',
+      format: 'mp4',
     };
-
-    // ── Step 4: Call info.download() ───────────────────────────────────────
-    // This is the correct high-level API:
-    //   - Internally calls FormatUtils.download()
-    //   - Handles format selection via chooseFormat()
-    //   - Handles URL deciphering
-    //   - For video+audio: single fetch → returns response.body directly
-    //   - For video/audio only: chunked 10MB downloads via &range= param
-    //     (avoids YouTube throttling on adaptive streams)
-    //   - Returns ReadableStream<Uint8Array> ready to pipe
-    const stream = await yt.download(videoId, downloadOptions)
-
-       // Convert ReadableStream to Node.js Readable for Next.js response
-    const nodeStream = await streamToNodeStream(stream);
-
-    // ── Step 5: Build filename ──────────────────────────────────────────────
-    const title = info.basic_info?.title ?? videoId
-    const safeTitle = title
-      .replace(/[^a-zA-Z0-9\s\-_.()]/g, '')
-      .replace(/\s+/g, '_')
-      .slice(0, 100)
 
     const ext      = type === 'audio' ? 'm4a' : 'mp4'
     const mime     = type === 'audio' ? 'audio/mp4' : 'video/mp4'
-    const filename = `${safeTitle}.${ext}`
-
-    // ── Step 6: Stream directly to client ──────────────────────────────────
-    // The ReadableStream<Uint8Array> from info.download() is spec-compliant
-    // and can be passed directly as the Response body — no buffering needed
-    return new Response(stream as unknown as ReadableStream, {
+    
+    // Get the readable stream using YouTube.js
+    const stream = await youtube.download(videoId, downloadOptions);
+    
+    // Convert ReadableStream to Node.js Readable for Next.js response
+    const nodeStream = await streamToNodeStream(stream);
+    
+    // Return stream response with download headers
+    return new NextResponse(nodeStream as any, {
       headers: {
-        'Content-Type':        mime,
-        'Content-Disposition': `attachment; filename="${filename}"`,
+        'Content-Disposition': `attachment; filename="${filename}.mp4"`,
+        'Content-Type': 'video/mp4',
         'Cache-Control':       'no-store',
         'X-Video-Title':       title,
         'X-Video-Id':          videoId,
       },
-    })
-
-  } catch (err: any) {
-    console.error('[download error]', err?.message ?? err)
-    _yt = null
-
-    // Surface specific youtubei.js errors clearly
-    const msg: string = err?.message ?? 'Download failed'
-    if (msg.includes('UNPLAYABLE'))    return errorResponse('Video is unplayable', 403)
-    if (msg.includes('LOGIN_REQUIRED'))return errorResponse('Video requires login', 403)
-    if (msg.includes('No matching'))   return errorResponse('No format available for these options', 404)
-    return errorResponse(msg)
+    });
+    
+  } catch (error) {
+    console.error('Download error:', error);
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Failed to download video' },
+      { status: 500 }
+    );
   }
+}
+
+// Helper: Convert Web ReadableStream to Node.js Readable
+async function streamToNodeStream(webStream: ReadableStream<Uint8Array>): Promise<Readable> {
+  const { Readable } = await import('stream');
+  
+  const reader = webStream.getReader();
+  
+  return new Readable({
+    async read() {
+      try {
+        const { done, value } = await reader.read();
+        if (done) {
+          this.push(null);
+        } else {
+          this.push(Buffer.from(value));
+        }
+      } catch (error) {
+        this.destroy(error as Error);
+      }
+    },
+    async destroy(error, callback) {
+      await reader.cancel();
+      callback(error);
+    }
+  });
 }
