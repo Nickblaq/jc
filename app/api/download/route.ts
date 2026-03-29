@@ -25,8 +25,6 @@ function errorResponse(message: string, status = 500) {
 
 export async function GET(req: NextRequest) {
   const videoId = req.nextUrl.searchParams.get('id')?.trim()
-  const quality = (req.nextUrl.searchParams.get('quality') || 'best') as string
-  const type    = (req.nextUrl.searchParams.get('type')   || 'video+audio') as string
 
   if (!videoId) return errorResponse('Missing video ID', 400)
 
@@ -50,10 +48,10 @@ export async function GET(req: NextRequest) {
     //   quality: 'best' | 'bestefficiency' | '144p' | '360p' | '720p' | '1080p' etc.
     //   format:  'mp4' | 'webm' | 'any'
     const downloadOptions = {
-      type,
-      quality,
-      format: 'mp4',
-    }
+      quality: 'best',           // or '1080p', '720p', etc.
+      type: 'video+audio',       // combined format
+      format: 'mp4',             // preferred container
+    };
 
     // ── Step 4: Call info.download() ───────────────────────────────────────
     // This is the correct high-level API:
