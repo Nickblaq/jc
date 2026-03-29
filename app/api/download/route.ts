@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
         'Content-Disposition': `attachment; filename="${filename}.mp4"`,
         'Content-Type': 'video/mp4',
         'Cache-Control':       'no-store',
-        'X-Video-Title':       title,
+        'X-Video-Title':       filename,
         'X-Video-Id':          videoId,
       },
     });
