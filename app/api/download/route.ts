@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
     //   - For video/audio only: chunked 10MB downloads via &range= param
     //     (avoids YouTube throttling on adaptive streams)
     //   - Returns ReadableStream<Uint8Array> ready to pipe
-    const stream = await info.download(videoId, downloadOptions)
+    const stream = await yt.download(videoId, downloadOptions)
 
        // Convert ReadableStream to Node.js Readable for Next.js response
     const nodeStream = await streamToNodeStream(stream);
