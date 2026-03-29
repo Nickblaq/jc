@@ -21,8 +21,11 @@ export async function getTopShorts() {
   const client = await getClient();
   const channel = await client.getChannel(CHANNEL_ID);
   
+  // Wait for the videos object first
+  const videosObject = await channel.getVideos();
+  
   const videos = [];
-  for await (const video of channel.getVideos()) {
+  for await (const video of videosObject) {
     if (video.isShort() && videos.length < 5) {
       videos.push({
         id: video.id,
