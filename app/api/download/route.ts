@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     };
     
     // Get the readable stream using YouTube.js
-    const stream = await youtube.download();
+    const stream = await youtube.download(videoId);
     
     // Return stream response with download headers
     return new NextResponse(stream as any, {
