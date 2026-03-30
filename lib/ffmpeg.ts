@@ -4,7 +4,7 @@ import { writeFile, mkdir, unlink, readFile } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 import { v4 as uuid } from 'uuid'
-import type { CTASlide, ProcessJob, ProcessResult } from '@/types'
+import { CTASlide, ProcessJob, ProcessResult } from '@/types'
 
 export const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads')
 export const OUTPUT_DIR = path.join(process.cwd(), 'public', 'output')
