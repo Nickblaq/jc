@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getClient, getBestThumb } from '@/lib/innertube'
-import type { ShortItem } from '@/types'
+import { ShortItem } from '@/types'
 
 export const runtime = 'nodejs'
 
