@@ -1,7 +1,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { processVideo } from '@/lib/ffmpeg'
-import type { ProcessJob } from '@/types'
+import  { ProcessJob } from '@/types'
 
 export const runtime    = 'nodejs'
 export const maxDuration = 300
