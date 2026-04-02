@@ -117,7 +117,7 @@ console.log(input)
     // getVideoTab() returns the Videos tab — we then sort by popularity
     let videosTab
     try {
-      videosTab = await channel.getVideos()
+      videosTab = await channel.getShorts()
     } catch {
       // Some channels use different tab structures
       videosTab = null
