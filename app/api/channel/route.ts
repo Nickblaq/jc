@@ -38,7 +38,7 @@ function formatViewCount(raw: number): string {
 
 export async function GET(req: NextRequest) {
   const input = req.nextUrl.searchParams.get('q')?.trim()
-
+console.log(input)
   if (!input) {
     return NextResponse.json({ error: 'Missing query parameter: q' }, { status: 400 })
   }
