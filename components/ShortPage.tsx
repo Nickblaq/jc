@@ -33,7 +33,7 @@ const RANK_LABELS = ['#1', '#2', '#3', '#4', '#5']
         throw new Error(data.error || 'Something went wrong')
       }
 
-      setResult(data.shorts as shortItem[])
+      setResult(data.shorts as ShortItem[])
       setStatus('done')
     } catch (e: any) {
       setError(e.message || 'Failed to load channel')
