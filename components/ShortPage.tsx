@@ -119,10 +119,7 @@ const RANK_LABELS = ['#1', '#2', '#3', '#4', '#5']
         {status === 'idle' && (
           <div className="empty">▶ · · ·</div>
         )}
-      </div>
     </>
-  )
-}
+  )}
      </>
-   )
- }
+   )}
