@@ -26,7 +26,7 @@ export default function ShortPage() {
     try {
       const res = await fetch(`/api/shorts?id=${encodeURIComponent(id)}`)
       const data = await res.json()
-
+      console.log(data)
       if (!res.ok) {
         throw new Error(data.error || 'Something went wrong')
       }
