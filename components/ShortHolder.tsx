@@ -7,7 +7,7 @@ import { ChannelResult, VideoItem } from '@/types'
 const RANK = ['#FFD700', '#C0C0C0', '#CD7F32', '#888', '#666']
 const RANK_LABELS = ['#1', '#2', '#3', '#4', '#5']
 
-export default function ChannelPage() {
+export default function ShortHolder() {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [result, setResult] = useState<ChannelResult | null>(null)
