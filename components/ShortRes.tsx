@@ -39,7 +39,7 @@ export default function ShortsRes() {
     setChannelId('')
 
     try {
-      const res  = await fetch(`/api/shorts?q=${encodeURIComponent(q)}`)
+      const res  = await fetch(`/api/shorts?id=${encodeURIComponent(q)}`)
       const data = await res.json()
 
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`)
