@@ -107,4 +107,9 @@ export interface ShortItem {
   duration?: string
 }
 
+export interface ShortResult {
+  channelId: string
+  shorts: ShortItem[]
+}
+
 export type SortType = 'popular' | 'latest';
