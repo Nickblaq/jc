@@ -7,6 +7,7 @@ export const runtime = 'nodejs'
 
 export async function GET(req: NextRequest) {
   const channelId = req.nextUrl.searchParams.get('id')?.trim()
+  console.log(channelId)
   if (!channelId) {
     return NextResponse.json({ error: 'Missing channel id' }, { status: 400 })
   }
