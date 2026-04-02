@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import type { ChannelResult, VideoItem } from '../api/channel/route'
+import { ChannelResult, VideoItem } from '@/types'
 
 // ─── Rank medal colours ───────────────────────────────────────────────────────
 const RANK = ['#FFD700', '#C0C0C0', '#CD7F32', '#888', '#666']
@@ -23,7 +23,7 @@ export default function ChannelPage() {
     setError('')
 
     try {
-      const res = await fetch(`/api/channel?q=${encodeURIComponent(q)}`)
+      const res = await fetch(`/api/shortvids?q=${encodeURIComponent(q)}`)
       const data = await res.json()
 
       if (!res.ok) {
