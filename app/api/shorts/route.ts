@@ -33,8 +33,24 @@ export async function GET(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'This channel has no Shorts tab' }, { status: 404 })
     }
+    const rawVideos: any[] = []
 
-    const rawShorts: any[] = (shortsTab as any).videos ?? []
+    if (shortTab) {
+      try {
+        const sorted = await (shortsTab as any).applyFilter?.('Popular')
+        if (sorted) {
+          sorted.videos?.forEach((v: any) => rawVideos.push(v))
+        }
+      } catch {
+        
+      }
+      
+      // If filter didn't work or gave nothing, use default order
+      if (rawVideos.length === 0) {
+        (videosTab as any).videos?.forEach((v: any) => rawVideos.push(v))
+      }
+    }
+    
 
     const shorts: ShortItem[] = rawShorts
       .slice(0, 5)
