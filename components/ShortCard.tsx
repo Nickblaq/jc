@@ -31,7 +31,7 @@ export default function ShortCard() {
         throw new Error(data.error || 'Something went wrong')
       }
 
-      setResult(data.shorts as ChannelResult)
+      setResult(data.shorts as shortItem[])
       setStatus('done')
     } catch (e: any) {
       setError(e.message || 'Failed to load channel')
@@ -415,32 +415,27 @@ export default function ShortCard() {
           <>
             {/* Channel info */}
             <div className="channel-header">
-              {result.channelThumbnail ? (
+              {result.thumbnail ? (
                 <img
                   className="channel-avatar"
-                  src={result.channelThumbnail}
-                  alt={result.channelName}
+                  src={result.thumbnail}
+                  alt={result.name}
                   onError={e => { (e.target as HTMLImageElement).style.display = 'none' }}
                 />
               ) : (
                 <div className="channel-avatar-placeholder">▶</div>
               )}
               <div className="channel-meta">
-                <div className="channel-name">{result.channelName}</div>
-                <div className="channel-handle">{result.channelHandle}</div>
-                {result.subscriberCount && result.subscriberCount !== 'N/A' && (
-                  <div className="channel-subs">
-                    <span>{result.subscriberCount}</span> subscribers
-                  </div>
-                )}
+                <div className="channel-name">{result.name}</div>
+   
               </div>
             </div>
 
             {/* Video list */}
-            {result.videos.length > 0 ? (
+            {result.length > 0 ? (
               <>
                 <p className="section-label">Top 5 Most Popular</p>
-                <VideoList videos={result.videos} />
+                <VideoList shorts={result} />
               </>
             ) : (
               <div className="empty">No videos found</div>
@@ -459,14 +454,14 @@ export default function ShortCard() {
 
 // ─── Video list component ─────────────────────────────────────────────────────
 
-function VideoList({ videos }: { videos: VideoItem[] }) {
-  const maxViews = videos[0]?.viewCountRaw || 1
+function VideoList({ shorts }: { shorts: ShortItem[] }) {
+  const maxViews = shorts[0]?.views || 1
 
   return (
     <div className="video-list">
-      {videos.map((video, i) => (
+      {shorts.map((short, i) => (
         <div
-          key={video.id}
+          key={short.id}
           className="video-card"
         >
           {/* Rank */}
@@ -479,39 +474,34 @@ function VideoList({ videos }: { videos: VideoItem[] }) {
 
           {/* Thumbnail */}
           <div className="video-thumb-wrap">
-            {video.thumbnail && (
+            {short.thumbnail && (
               <img
                 className="video-thumb"
-                src={video.thumbnail}
-                alt={video.title}
+                src={short.thumbnail}
+                alt={short.title}
                 loading="lazy"
               />
             )}
-            {video.duration && (
-              <span className="video-duration">{video.duration}</span>
+            {short.duration && (
+              <span className="video-duration">{short.duration}</span>
             )}
           </div>
 
           {/* Info */}
           <div className="video-info">
-            <div className="video-title">{video.title}</div>
+            <div className="video-title">{short.title}</div>
             <div className="video-meta">
               <span className="video-views">
-                {video.viewCount} views
+                {short.views} views
               </span>
-              {video.publishedTime && (
-                <>
-                  <span className="video-dot" />
-                  <span className="video-published">{video.publishedTime}</span>
-                </>
-              )}
+
             </div>
             {/* Relative view bar */}
             <div className="view-bar-wrap">
               <div
                 className="view-bar"
                 style={{
-                  width: `${Math.round((video.viewCountRaw / maxViews) * 100)}%`,
+                  width: `${Math.round((short.views / maxViews) * 100)}%`,
                 }}
               />
             </div>
