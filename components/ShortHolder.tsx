@@ -284,9 +284,9 @@ export default function ShortHolder() {
 
             <p className="section-label" style={{ marginBottom: 20 }}>Top 5 Most Popular</p>
             
-                {result.videos.length > 0 (
+                {result.videos.length > 0 ? (
                   <div className="ch-subs" style={{ marginBottom: 20 }}><em>{result.videos.length}</em> videos</div>
-                ) : <div className="ch-subs"><em>0</em> videos</div>
+                ) : <div className="ch-subs" style={{ marginBottom: 20 }}><em>0</em> videos</div>
             }
             <div className="layout">
               <div>
