@@ -43,7 +43,7 @@ export default function ShortHolder() {
     setDlState(null)
 
     try {
-      const res  = await fetch(`/api/channel?q=${encodeURIComponent(q)}`)
+      const res  = await fetch(`/api/shortvids?q=${encodeURIComponent(q)}`)
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Failed to load channel')
       setResult(data as ChannelResult)
