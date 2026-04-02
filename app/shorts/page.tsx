@@ -1,4 +1,4 @@
-import ShortPage from "@/components/ShortPage"
+import ShortHolder from "@/components/ShortHolder"
 
 export default function Shorts() {
 
