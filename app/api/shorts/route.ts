@@ -31,11 +31,12 @@ export async function GET(req: NextRequest) {
     try {
       shortsTab = await channel.getShorts()
     } catch {
-      return NextResponse.json({ error: 'This channel has no Shorts tab' }, { status: 404 })
+      shortsTab = null;
+      // return NextResponse.json({ error: 'This channel has no Shorts tab' }, { status: 404 })
     }
     const rawVideos: any[] = []
 
-    if (shortTab) {
+    if (shortsTab) {
       try {
         const sorted = await (shortsTab as any).applyFilter?.('Popular')
         if (sorted) {
@@ -47,7 +48,7 @@ export async function GET(req: NextRequest) {
       
       // If filter didn't work or gave nothing, use default order
       if (rawVideos.length === 0) {
-        (videosTab as any).videos?.forEach((v: any) => rawVideos.push(v))
+        (shortsTab as any).videos?.forEach((v: any) => rawVideos.push(v))
       }
     }
     
