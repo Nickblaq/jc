@@ -1,8 +1,8 @@
-import ShortHolder from "@/components/ShortHolder"
+import ShortRes from "@/components/ShortRes"
 
 export default function Shorts() {
 
   return (
-      <ShortHolder />
+      <ShortRes />
   )
 }
