@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Innertube, UniversalCache } from 'youtubei.js'
 import { getBestThumb } from '@/lib/innertube'
-import { ShortItem } from '@/types'
+import { ShortItem, ShortResult } from '@/types'
 
 export const runtime = 'nodejs'
 
@@ -17,25 +17,6 @@ async function getYT(): Promise<Innertube> {
     })
   }
   return _yt
-}
-
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function parseViewCount(text: string | undefined): number {
-  if (!text) return 0
-  const clean = text.replace(/[^0-9.KMB]/gi, '')
-  const num = parseFloat(clean)
-  if (text.toUpperCase().includes('B')) return Math.round(num * 1_000_000_000)
-  if (text.toUpperCase().includes('M')) return Math.round(num * 1_000_000)
-  if (text.toUpperCase().includes('K')) return Math.round(num * 1_000)
-  return Math.round(num)
-}
-
-function formatViewCount(raw: number): string {
-  if (raw >= 1_000_000_000) return `${(raw / 1_000_000_000).toFixed(1)}B`
-  if (raw >= 1_000_000) return `${(raw / 1_000_000).toFixed(1)}M`
-  if (raw >= 1_000) return `${(raw / 1_000).toFixed(1)}K`
-  return raw.toLocaleString()
 }
 
 export async function GET(req: NextRequest) {
@@ -58,7 +39,7 @@ export async function GET(req: NextRequest) {
 
     resolvedId = first.id || firstChannel.channel_id || first.endpoint?.payload?.browseId
 
-    if (!channelId) {
+    if (!resolveId) {
         return NextResponse.json(
           { error: 'Could not resolve channel ID from search result' },
           { status: 404 }
@@ -120,9 +101,23 @@ export async function GET(req: NextRequest) {
       }))
       .filter(v => v.id)
 
+  const result: ShortResult = {
+    channelId,
+    channelName,
+    channelHandle,
+    subscriberCount,
+    channelThumbnail,
+    channelBanner,
+    shorts
+  }
+
     return NextResponse.json({ channelId: resolvedId, shorts })
   } catch (err: any) {
     console.error('[shorts]', err.message)
+    
+  // Reset session on error so next request gets a fresh one
+    _yt = null
+
     return NextResponse.json({ error: err.message ?? 'Failed to fetch Shorts' }, { status: 500 })
   }
 }
