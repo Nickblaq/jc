@@ -1,69 +1,124 @@
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getClient, getBestThumb } from '@/lib/innertube'
+import { Innertube, UniversalCache } from 'youtubei.js'
+import { getBestThumb } from '@/lib/innertube'
 import { ShortItem } from '@/types'
 
 export const runtime = 'nodejs'
 
+// Singleton — reuse the session across requests (avoids re-initialising on every call)
+let _yt: Innertube | null = null
+
+async function getYT(): Promise<Innertube> {
+  if (!_yt) {
+    _yt = await Innertube.create({
+      cache: new UniversalCache(false), // in-memory cache
+      generate_session_locally: true,   // faster init, no network hit
+    })
+  }
+  return _yt
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function parseViewCount(text: string | undefined): number {
+  if (!text) return 0
+  const clean = text.replace(/[^0-9.KMB]/gi, '')
+  const num = parseFloat(clean)
+  if (text.toUpperCase().includes('B')) return Math.round(num * 1_000_000_000)
+  if (text.toUpperCase().includes('M')) return Math.round(num * 1_000_000)
+  if (text.toUpperCase().includes('K')) return Math.round(num * 1_000)
+  return Math.round(num)
+}
+
+function formatViewCount(raw: number): string {
+  if (raw >= 1_000_000_000) return `${(raw / 1_000_000_000).toFixed(1)}B`
+  if (raw >= 1_000_000) return `${(raw / 1_000_000).toFixed(1)}M`
+  if (raw >= 1_000) return `${(raw / 1_000).toFixed(1)}K`
+  return raw.toLocaleString()
+}
+
 export async function GET(req: NextRequest) {
-  const channelId = req.nextUrl.searchParams.get('q')?.trim()
-  console.log(channelId)
-  if (!channelId) {
+  const input = req.nextUrl.searchParams.get('q')?.trim()
+  console.log(input)
+  if (!input) {
     return NextResponse.json({ error: 'Missing channel id' }, { status: 400 })
   }
 
   try {
-    const yt = await getClient()
+    const yt = await getYT()
 
     // Resolve name/@handle to channel ID if needed
-    let resolvedId = channelId
-    if (!channelId.startsWith('UC')) {
-      const results = await yt.search(channelId, { type: 'channel' })
-      const first   = results.results?.find((r: any) => r.type === 'Channel') as any
-      if (!first) return NextResponse.json({ error: `Channel not found: ${channelId}` }, { status: 404 })
-      resolvedId = first.id ?? first.endpoint?.payload?.browseId
-    }
+    let resolvedId = input
+    if (!input.startsWith('UC')) {
+      const query = input.startsWith('@') ? input : input
+      const results = await yt.search(query, { type: 'channel' })
+      const first   = results.results?.find((r) => r.type === 'Channel' || r.type === 'ChannelRenderer' ) as any
+      if (!first) return NextResponse.json({ error: `Channel not found: ${input}` }, { status: 404 })}
 
+    resolvedId = first.id || firstChannel.channel_id || first.endpoint?.payload?.browseId
+
+    if (!channelId) {
+        return NextResponse.json(
+          { error: 'Could not resolve channel ID from search result' },
+          { status: 404 }
+        )
+      }
+    }
+  
     const channel = await yt.getChannel(resolvedId)
 
+      // ── Step 3: Get channel metadata ────────────────────────────────────────
+    const metadata = channel.metadata as any
+    const header = channel.header as any
+
+    const channelName =
+      metadata?.title ||
+      header?.title?.toString() ||
+      header?.author ||
+      'Unknown Channel'
+
+    const channelHandle =
+      metadata?.vanity_url ||
+      header?.channel_handle_text?.toString() ||
+      `@${channelName.toLowerCase().replace(/\s+/g, '')}`
+
+    const subscriberCount =
+      header?.subscribers?.toString() ||
+      header?.subscriber_count_text?.toString() ||
+      'N/A'
+
+    const channelThumbnail =
+      metadata?.thumbnail?.[0]?.url ||
+      header?.avatar?.[0]?.url ||
+      header?.thumbnail?.[0]?.url ||
+      ''
+
+    const channelBanner =
+      header?.banner?.[0]?.url ||
+      header?.tv_banner?.[0]?.url ||
+      ''
     // getShorts() returns the dedicated Shorts tab on the channel page
-    let shortsTab: any = null
+    let shortsTab
     try {
       shortsTab = await channel.getShorts()
     } catch {
       shortsTab = null;
-      // return NextResponse.json({ error: 'This channel has no Shorts tab' }, { status: 404 })
+      return NextResponse.json({ error: 'This channel has no Shorts tab' }, { status: 404 })
     }
-    const rawShorts: any[] = []
-
-    if (shortsTab) {
-      try {
-        const sorted = await (shortsTab as any).applyFilter?.('Popular')
-        if (sorted) {
-          sorted.videos?.forEach((v: any) => rawShorts.push(v))
-        }
-      } catch {
-        
-      }
-      
-      // If filter didn't work or gave nothing, use default order
-      if (rawShorts.length === 0) {
-        (shortsTab as any).videos?.forEach((v: any) => rawShorts.push(v))
-      }
-    }
-    
+    let rawShorts = shortTab.videos || []
 
     const shorts: ShortItem[] = rawShorts
       .slice(0, 5)
-      .map((v: any) => ({
-        id:        v.id ?? v.video_id ?? '',
-        title:     v.title?.toString() ?? 'Untitled',
+      .map((v) => ({
+        id:        v.id,
+        title:     v.title?.toString() || video.title?.text || 'Untitled',
         thumbnail: getBestThumb(v.thumbnails ?? v.thumbnail),
-        views:     v.view_count?.toString() ?? v.short_view_count?.toString() ?? '',
-        duration:  v.duration?.toString() ?? '',
+        views:     v.view_count?.toString() || v.view_count?.text() || '',
+        duration:  v.duration?.toString() || v.duration?.text || '',
         url:       `https://www.youtube.com/shorts/${v.id ?? v.video_id}`,
       }))
-      .filter(s => s.id)
+      .filter(v => v.id)
 
     return NextResponse.json({ channelId: resolvedId, shorts })
   } catch (err: any) {
