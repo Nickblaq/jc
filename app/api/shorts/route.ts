@@ -159,3 +159,4 @@ export async function GET(req: NextRequest) {
       { error: err?.message ?? 'Failed to fetch Shorts' },
       { status: 500 }
     )
+  }}
