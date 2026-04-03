@@ -3,14 +3,7 @@
 
 import { useState, useRef } from 'react'
 import Link from 'next/link'
-import { ShortItem } from '@/types'
-
-// ─── API response shape ───────────────────────────────────────────────────────
-
-interface ShortsResponse {
-  channelId: string
-  shorts: ShortItem[]
-}
+import { ShortItem, ShortResult } from '@/types'
 
 // ─── Rank colours — gold, silver, bronze, then dimmed ────────────────────────
 const RANK_COLORS = ['#FFD700', '#C0C0C0', '#CD7F32', '#666', '#444']
@@ -20,8 +13,7 @@ const RANK_COLORS = ['#FFD700', '#C0C0C0', '#CD7F32', '#666', '#444']
 export default function ShortsRes() {
   const [query,      setQuery]      = useState('')
   const [status,     setStatus]     = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
-  const [channelId,  setChannelId]  = useState('')
-  const [shorts,     setShorts]     = useState<ShortItem[]>([])
+  const [result,     setResult]     = useState<ShortResult | null>(null)
   const [error,      setError]      = useState('')
   const [selected,   setSelected]   = useState<ShortItem | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -33,26 +25,25 @@ export default function ShortsRes() {
     if (!q || status === 'loading') return
 
     setStatus('loading')
-    setShorts([])
+    setResult(null)
     setSelected(null)
     setError('')
-    setChannelId('')
 
     try {
-      const res  = await fetch(`/api/shorts?id=${encodeURIComponent(q)}`)
+      const res  = await fetch(`/api/getshorts?q=${encodeURIComponent(q)}`)
       const data = await res.json()
 
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`)
-
-      const typed = data as ShortsResponse
-      setChannelId(typed.channelId)
-      setShorts(typed.shorts)
+      if (!data) {
+        setError(res.error ?? "No data available" )
+        return;
+      }
+      setResult(data)
       setStatus('done')
 
       // Auto-select first if results exist
-      if (typed.shorts.length > 0) setSelected(typed.shorts[0])
+      if (data.shorts.length > 0) setSelected(data.shorts[0])
     } catch (e: any) {
-      setError(e.message ?? 'Something went wrong')
+      setError(e.error ?? `HTTP ${res.status}`)
       setStatus('error')
     }
   }
@@ -74,7 +65,7 @@ export default function ShortsRes() {
         {/* ── Nav back ── */}
         <div style={{ marginBottom: 28 }}>
           <Link
-            href="/editor"
+            href="/channel"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 6,
               fontSize: 12, fontFamily: 'var(--mono)', color: 'var(--dim)',
@@ -84,7 +75,7 @@ export default function ShortsRes() {
             onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
             onMouseLeave={e => (e.currentTarget.style.color = 'var(--dim)')}
           >
-            ← Back to Editor
+            ← Back
           </Link>
         </div>
 
@@ -95,21 +86,21 @@ export default function ShortsRes() {
             letterSpacing: '4px', textTransform: 'uppercase',
             color: 'var(--red)', marginBottom: 10,
           }}>
-            youtubei.js · InnerTube · No API Key
+            youtubei.js · InnerTube · Shorts
           </p>
           <h1 style={{
             fontFamily: 'Syne, sans-serif', fontWeight: 800,
             fontSize: 'clamp(32px, 5vw, 52px)',
             lineHeight: 0.95, color: '#fff', marginBottom: 12,
           }}>
-            Channel<br />
+            Shorts Videos<br />
             <span style={{ color: 'var(--red)' }}>Shorts Browser</span>
           </h1>
           <p style={{
             fontSize: 14, color: 'var(--dim)',
             lineHeight: 1.65, maxWidth: 480,
           }}>
-            Enter any YouTube channel name, @handle or channel ID to load its top 5 most viewed Shorts.
+            Enter any YouTube channel name, @handle or channel ID to load its Shorts.
           </p>
         </header>
 
@@ -232,16 +223,16 @@ export default function ShortsRes() {
                 color: 'var(--text)', background: 'var(--surface2)',
                 border: '1px solid var(--border)',
                 padding: '3px 8px', borderRadius: 4,
-              }}>{channelId}</code>
+              }}>{result.channelId}</code>
               <p style={{
                 fontFamily: 'var(--mono)', fontSize: 9,
                 letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--dim)',
               }}>
-                · Top {shorts.length} Shorts
+                · Shorts from {result.channelName} Channel
               </p>
             </div>
 
-            {shorts.length === 0 ? (
+            {result.shorts.length === 0 ? (
               <div style={{
                 border: '1px dashed var(--border)', borderRadius: 12,
                 padding: '48px 32px', textAlign: 'center',
@@ -266,10 +257,10 @@ export default function ShortsRes() {
                     letterSpacing: '3px', textTransform: 'uppercase',
                     color: 'var(--dim)', marginBottom: 8,
                   }}>
-                    Ranked by views
+                   Shorts
                   </p>
 
-                  {shorts.map((short, i) => (
+                  {result.shorts.map((short, i) => (
                     <ShortRow
                       key={short.id}
                       short={short}
