@@ -1,8 +1,8 @@
-import ShortsCount from "@/components/ShortsCount"
+import ShortsRes from "@/components/ShortRes"
 
 export default function Shorts() {
 
   return (
-      <ShortsCount />
+      <ShortsRes />
   )
 }
