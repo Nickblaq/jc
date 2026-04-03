@@ -34,7 +34,7 @@ export default function ShortsRes() {
       const data = await res.json()
 
       if (!data) {
-        setError(res.error ?? "No data available" )
+        setError("No data available" )
         return;
       }
       setResult(data)
