@@ -109,6 +109,11 @@ export interface ShortItem {
 
 export interface ShortResult {
   channelId: string
+  channelName: string
+  channelHandle: string
+  subscriberCount: string
+  channelThumbnail: string
+  channelBanner: string
   shorts: ShortItem[]
 }
 
