@@ -260,7 +260,7 @@ const RANK_COLORS = ['#FFD700', '#C0C0C0', '#CD7F32', '#666', '#444']
                    Shorts
                   </p>
 
-                  {result.shorts.map((short, i) => (
+                  {result?.shorts.map((short, i) => (
                     <ShortRow
                       key={short.id}
                       short={short}
