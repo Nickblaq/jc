@@ -10,7 +10,7 @@ const RANK_COLORS = ['#FFD700', '#C0C0C0', '#CD7F32', '#666', '#444']
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-export default function ShortsRes() {
+ export default function ShortsRes() {
   const [query,      setQuery]      = useState('')
   const [status,     setStatus]     = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
   const [result,     setResult]     = useState<ShortResult | null>(null)
@@ -223,12 +223,12 @@ export default function ShortsRes() {
                 color: 'var(--text)', background: 'var(--surface2)',
                 border: '1px solid var(--border)',
                 padding: '3px 8px', borderRadius: 4,
-              }}>{result.channelId}</code>
+              }}>{result?.channelId}</code>
               <p style={{
                 fontFamily: 'var(--mono)', fontSize: 9,
                 letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--dim)',
               }}>
-                · Shorts from {result.channelName} Channel
+                · Shorts from {result?.channelName} Channel
               </p>
             </div>
 
@@ -300,7 +300,8 @@ export default function ShortsRes() {
       </div>
     </div>
   )
-}
+} 
+ 
 
 // ─── ShortRow — list item on the left ────────────────────────────────────────
 
