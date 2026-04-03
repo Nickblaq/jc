@@ -232,7 +232,7 @@ const RANK_COLORS = ['#FFD700', '#C0C0C0', '#CD7F32', '#666', '#444']
               </p>
             </div>
 
-            {result.shorts.length === 0 ? (
+            {result?.shorts.length === 0 ? (
               <div style={{
                 border: '1px dashed var(--border)', borderRadius: 12,
                 padding: '48px 32px', textAlign: 'center',
