@@ -43,7 +43,7 @@ export default function ShortsRes() {
       // Auto-select first if results exist
       if (data.shorts.length > 0) setSelected(data.shorts[0])
     } catch (e: any) {
-      setError(e.error ?? `HTTP ${res.status}`)
+      setError(e.error ?? `HTTP ${e.status}`)
       setStatus('error')
     }
   }
