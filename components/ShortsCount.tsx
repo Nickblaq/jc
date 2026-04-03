@@ -91,13 +91,15 @@ export default function ShortsCount() {
       {status === 'error' && <p style={{ color: '#f66' }}>Error: {error}</p>}
 
       {status === 'done' && (
-        <p style={{ color: 'var(--red)', fontSize: 18 }}>
+      <div>
+      <p style={{ color: 'var(--red)', fontSize: 18 }}>
           Shorts found: <strong>{shortsCount}</strong>
         </p>
 
       <p style={{ color: 'var(--red)', fontSize: 28 }}>
           Channel Name: <strong>{channelName}</strong>
         </p>
+        </div>
       )}
 
       {status === 'idle' && <p style={{ color: '#888' }}>Enter a channel above and press Enter or Fetch.</p>}
