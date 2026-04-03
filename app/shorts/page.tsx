@@ -1,4 +1,4 @@
-import ShortsCount from "@/components/ShorsCount"
+import ShortsCount from "@/components/ShortsCount"
 
 export default function Shorts() {
 
