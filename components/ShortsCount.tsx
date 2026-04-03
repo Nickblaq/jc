@@ -40,7 +40,10 @@ export default function ShortsCount() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', padding: 36, fontFamily: 'sans-serif', color: '#fff', background: '#111' }}>
+    <div style={{ minHeight: '100vh',
+                 background: 'var(--bg)',
+                 padding: '36px 24px 80px', 
+                }}>
       <h1 style={{ marginBottom: 20 }}>YouTube Shorts Count</h1>
 
       <div style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
@@ -50,18 +53,31 @@ export default function ShortsCount() {
           onChange={e => setQuery(e.target.value)}
           onKeyDown={handleKey}
           placeholder="Enter channel name, @handle, or channel ID"
-          style={{ flex: 1, padding: 10, borderRadius: 6, border: '1px solid #555', background: '#222', color: '#fff' }}
-        />
+          style={{ 
+              width: '100%',
+                background: 'var(--surface)',
+                border: '1px solid var(--border)',
+                borderRadius: 10,
+                padding: '13px 16px',
+                fontSize: 14,
+                color: 'var(--text)',
+                transition: 'border-color .2s',
+                 }} />
+        
         <button
           onClick={fetchShorts}
           disabled={status === 'loading' || !query.trim()}
           style={{
-            padding: '10px 16px',
-            borderRadius: 6,
-            border: 'none',
-            background: status === 'loading' ? '#555' : '#e33',
-            color: '#fff',
-            cursor: status === 'loading' ? 'not-allowed' : 'pointer',
+            padding: '13px 24px',
+              background: status === 'loading' ? 'var(--surface)' : 'var(--red)',
+              border: 'none',
+              borderRadius: 10,
+              color: status === 'loading' ? 'var(--dim)' : '#fff',
+              fontSize: 14, fontWeight: 700,
+              cursor: status === 'loading' ? 'not-allowed' : 'pointer',
+              transition: 'background .15s',
+              whiteSpace: 'nowrap',
+              minWidth: 100,
           }}
         >
           {status === 'loading' ? 'Loading...' : 'Fetch'}
