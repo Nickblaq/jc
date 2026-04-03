@@ -1,8 +1,8 @@
-import ShortRes from "@/components/ShortRes"
+import ShorterPage from "@/components/ShorterPage"
 
 export default function Shorts() {
 
   return (
-      <ShortRes />
+      <ShorterPage />
   )
 }
