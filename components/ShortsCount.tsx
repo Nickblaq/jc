@@ -7,6 +7,7 @@ import { ShortResult } from '@/types'
 export default function ShortsCount() {
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [channelName, setChannelName] = useState<string>('')
   const [shortsCount, setShortsCount] = useState<number | null>(null)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -17,16 +18,19 @@ export default function ShortsCount() {
 
     setStatus('loading')
     setShortsCount(null)
+    setChannelName('')
     setError('')
 
     try {
       const res = await fetch(`/api/getshorts?q=${encodeURIComponent(q)}`)
       const data: ShortResult = await res.json()
 
-      if (!data || !data.shorts) {
+      if (!data || !data.shorts || !data.channelName) {
         setShortsCount(0)
+        setChannelName('No Name')
       } else {
         setShortsCount(data.shorts.length)
+        setChannelName(data.channelName)
       }
       setStatus('done')
     } catch (e: any) {
@@ -89,6 +93,10 @@ export default function ShortsCount() {
       {status === 'done' && (
         <p style={{ color: 'var(--red)', fontSize: 18 }}>
           Shorts found: <strong>{shortsCount}</strong>
+        </p>
+
+      <p style={{ color: 'var(--red)', fontSize: 28 }}>
+          Channel Name: <strong>{channelName}</strong>
         </p>
       )}
 
