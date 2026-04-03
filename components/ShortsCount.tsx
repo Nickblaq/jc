@@ -88,7 +88,7 @@ export default function ShortsCount() {
 
       {status === 'done' && (
         <p style={{ color: 'var(--red)', fontSize: 18 }}>
-          Shorts found: <strong>{shortsCount ?? 0}</strong>
+          Shorts found: <strong>{shortsCount}</strong>
         </p>
       )}
 
