@@ -266,7 +266,7 @@ const RANK_COLORS = ['#FFD700', '#C0C0C0', '#CD7F32', '#666', '#444']
                       short={short}
                       rank={i}
                       isSelected={selected?.id === short.id}
-                      maxViews={parseViews(shorts[0].views)}
+                      maxViews={parseViews(short.views)}
                       onClick={() => setSelected(short)}
                     />
                   ))}
