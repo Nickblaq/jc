@@ -132,7 +132,7 @@ export async function GET(req: NextRequest) {
         shorts = raw
           .map(mapVideo)
           .filter((s): s is ShortItem => s !== null && s.id !== '')
-          .filter(s => parseDurationSecs(s.duration) <= 60) // Shorts = ≤ 60s
+          .filter(s => parseDurationSecs(s?.duration) <= 60) // Shorts = ≤ 60s
           .slice(0, 5)
       } catch (videosErr: any) {
         console.warn('[shorts] getVideos() fallback failed:', videosErr?.message)
