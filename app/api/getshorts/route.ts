@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
 
     const shorts: ShortItem[] = rawShorts
       .slice(0, 5)
-      .map((v) => ({
+      .map((v: any) => ({
         id: v.id ?? v.video_id,
         title: v.title?.toString() || v.title?.text || 'Untitled',
         thumbnail: getBestThumb(v.thumbnails ?? v.thumbnail),
@@ -116,7 +116,7 @@ export async function GET(req: NextRequest) {
         duration: v.duration?.toString() || v.duration?.text || '',
         url: `https://www.youtube.com/shorts/${v.id ?? v.video_id}`,
       }))
-     // .filter((v: ShortItem) => v.id)
+      // .filter((v: ShortItem) => v.id)
 
     const result: ShortResult = {
       channelId: resolvedId,
