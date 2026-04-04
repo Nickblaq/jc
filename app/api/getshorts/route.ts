@@ -171,7 +171,7 @@ export async function GET(req: NextRequest) {
           viewRaw: rawCount,
           duration: v.duration?.toString() || v.length_text?.toString() || '',
           thumbnail,
-          url: `https://www.youtube.com/shorts/${v.id ?? video.id}`,
+          url: `https://www.youtube.com/shorts/${v.id ?? v.video_id}`,
         }
       })
       .filter((v) => v.id) // remove items with no ID
