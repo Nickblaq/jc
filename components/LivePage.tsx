@@ -17,6 +17,7 @@ interface DlState {
   status:   'starting' | 'downloading' | 'done' | 'error'
   received: number   // bytes received so far
   error?:   string
+  code?:    number
 }
 
 export default function LivePage() {
@@ -117,7 +118,7 @@ export default function LivePage() {
 
     } catch (e: any) {
       if (e.name === 'AbortError') return
-      setDlState({ videoId: video.id, status: 'error', received: 0, error: e.message })
+      setDlState({ videoId: video.id, status: 'error', received: 0, error: e.message, code: e.code })
     }
   }
 
@@ -458,7 +459,10 @@ function DownloadPanel({ video, dlType, dlQuality, dlState, onTypeChange, onQual
       )}
 
       {isError && (
+      <div>
         <div className="status-err">✕ {dlState?.error ?? 'Download failed'}</div>
+      <div className="status-err">✕ {dlState?.code ?? 'No Code'}</div>
+        </div>
       )}
 
       {/* Metadata */}
