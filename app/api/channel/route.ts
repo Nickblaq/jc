@@ -172,7 +172,7 @@ console.log(input)
           publishedTime: v.published?.toString() || v.published_time_text?.toString() || '',
           duration: v.duration?.toString() || v.length_text?.toString() || '',
           thumbnail,
-          url: `https://www.youtube.com/watch?v=${v.id || v.video_id}`,
+          url: `https://www.youtube.com/shorts/${v.id || v.video_id}`,
         }
       })
       .filter((v) => v.id) // remove items with no ID
