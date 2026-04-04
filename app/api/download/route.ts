@@ -19,15 +19,15 @@ async function getYT(): Promise<Innertube> {
 
 export async function GET(request: NextRequest) {
   try {
-    const videoId = request.nextUrl.searchParams.get('id')?.trim()
+    const videoId = request.nextUrl.searchParams.get('q')
 
-    if (!videoId) {
+    if (!videoId ) {
       return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
     }
 
-    if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-      return NextResponse.json({ error: 'Invalid video ID format' }, { status: 400 })
-    }
+    // if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+   //   return NextResponse.json({ error: 'Invalid video ID format' }, { status: 400 })
+   // }
 
     const yt = await getYT()
 
