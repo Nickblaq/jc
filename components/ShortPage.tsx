@@ -199,9 +199,9 @@ export default function ShortPage() {
             </div>
           </div>
 
-          {/* Video list */}
+          {/* Video list component is inserted below the p tag below */}
           <p className="section-label">Top 5 Most Popular</p>
-          <ShortList shorts={result} />
+          
         </>
       )}
 
