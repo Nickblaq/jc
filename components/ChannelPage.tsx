@@ -385,6 +385,7 @@ function DownloadPanel({ video, dlType, dlQuality, dlState, onTypeChange, onQual
       </div>
 
       <div className="dl-title">{video.title}</div>
+      <div className="section-label" style={{ marginBottom: 20 }} > ID: {video.id} </div>
 
       {/* Format type */}
       <div className="opt-group">
