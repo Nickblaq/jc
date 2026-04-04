@@ -179,7 +179,7 @@ export async function GET(req: NextRequest) {
       .slice(0, 5) // top 5
 
     const result: ShortResult = {
-      channelId,
+      channelId: resolvedId,
       channelName,
       channelHandle,
       subscriberCount,
