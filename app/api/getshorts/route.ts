@@ -114,7 +114,7 @@ export async function GET(req: NextRequest) {
       ''
 
     // ── Step 4: Shorts ────────────────────────────────────
-    let shortsTa
+    let shortsTab
 
     try {
       shortsTab = await channel.getShorts()
