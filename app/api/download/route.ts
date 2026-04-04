@@ -1,67 +1,64 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { Innertube } from 'youtubei.js';
+import { NextRequest, NextResponse } from 'next/server'
+import { Innertube, UniversalCache } from 'youtubei.js'
+
+export const runtime = 'nodejs'
+export const maxDuration = 300
+
+// Singleton
+let _yt: Innertube | null = null
+
+async function getYT(): Promise<Innertube> {
+  if (!_yt) {
+    _yt = await Innertube.create({
+      cache: new UniversalCache(false),
+      generate_session_locally: true,
+    })
+  }
+  return _yt
+}
 
 export async function GET(request: NextRequest) {
   try {
-    const videoId = request.nextUrl.searchParams.get('id')?.trim();
-    
+    const videoId = request.nextUrl.searchParams.get('id')?.trim()
+
     if (!videoId) {
-      return NextResponse.json(
-        { error: 'Video ID is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
     }
 
-    // Validate video ID format (11 characters, alphanumeric with underscores/dashes)
     if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-      return NextResponse.json(
-        { error: 'Invalid video ID format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid video ID format' }, { status: 400 })
     }
 
-    // Create YouTube client
-    const youtube = await Innertube.create();
-    
-    // Get video info
-    const video = await youtube.getInfo(videoId);
-    
-    // Check if video is playable
-    if (!video) {
-      throw new Error('No available video');
-    }
+    const yt = await getYT()
 
-    // Get video title for filename (sanitize)
-    const filename = video.basic_info.title?.replace(/[^\w\s]/gi, '') || 'video';
-    
-    // Set download options
-    const downloadOptions = {
-      quality: 'best',
+    const stream = await yt.download(videoId, {
+      quality: '360p',          // safe muxed stream
       type: 'video+audio',
       format: 'mp4',
-    };
-    
-    // Get the readable stream using YouTube.js
-    const stream = await youtube.download(videoId);
-    
-    // Return stream response with download headers
-    return new NextResponse(stream as any, {
+      codec: 'avc'              // iPhone-safe
+    })
+
+    if (!stream) {
+      throw new Error('Failed to get download stream')
+    }
+
+    return new NextResponse(stream, {
       headers: {
-        'Content-Disposition': `attachment; filename="${filename}.mp4"`,
+        'Content-Disposition': `attachment; filename="${videoId}.mp4"`,
         'Content-Type': 'video/mp4',
-        'Cache-Control':       'no-store',
-        'X-Video-Title':       filename,
-        'X-Video-Id':          videoId,
+        'Cache-Control': 'no-store',
       },
-    });
-    
-  } catch (error) {
-    console.error('Download error:', error);
+    })
+
+  } catch (error: any) {
+    console.error('[download route error]', error)
+
+    _yt = null
+
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to download video' },
+      { error: error?.message || 'Failed to download video' },
       { status: 500 }
-    );
+    )
   }
 }
-
 // Helper: Convert Web ReadableStream to Node.js 
