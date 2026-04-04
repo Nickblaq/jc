@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import ShortList from './ShortList'
 import { ShortItem } from '@/types'
 
 // ─── Rank medal colours ───────────────────────────────────────────────────────
