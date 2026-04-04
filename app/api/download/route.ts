@@ -27,8 +27,8 @@ export async function GET(request: NextRequest) {
     const video = await youtube.getInfo(videoId);
     
     // Check if video is playable
-    if (!video.streaming_data) {
-      throw new Error('Streaming data not available for this video');
+    if (!video) {
+      throw new Error('No available video');
     }
 
     // Get video title for filename (sanitize)
