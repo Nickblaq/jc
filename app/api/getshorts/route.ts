@@ -128,7 +128,7 @@ export async function GET(req: NextRequest) {
       shorts,
     }
 
-    return NextResponse.json(result)
+    return NextResponse.json({message: 'got shorts', data: result})
   } catch (err: any) {
     console.error('[shorts]', err.message)
 
