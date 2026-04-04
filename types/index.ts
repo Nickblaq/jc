@@ -103,6 +103,7 @@ export interface ShortItem {
   title: string
   thumbnail: string
   views: string
+  viewRaw?: number
   url: string
   duration?: string
 }
