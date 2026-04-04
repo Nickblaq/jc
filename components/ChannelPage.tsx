@@ -67,7 +67,7 @@ export default function ChannelPage() {
     setDlState({ videoId: video.id, status: 'starting', received: 0 })
 
     try {
-      const res = await fetch(`/api/download?q=${encodeURIComponent(video.id)}`, {
+      const res = await fetch(`/api/download?q=${video.id}`, {
         signal: abortRef.current.signal,
       })
 
