@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
     const shorts: ShortItem[] = rawShorts
       .slice(0, 5)
       .map((v) => ({
-        id: v.id || v.video_id,
+        id:  v.video_id,
         title: v.title?.toString() || v.title?.text || 'Untitled',
         thumbnail: getBestThumb(v.thumbnails ?? v.thumbnail),
         views: v.view_count?.toString() || v.view_count?.text || '',
