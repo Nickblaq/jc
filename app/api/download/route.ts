@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
       type: 'video+audio',
        format: 'mp4',
       codec: 'avc',
-      client: 'ANDROID'
+      client: 'ANDROID',
+      range: { start: 0, end: 500000 }
     })
 
     if (!stream) {
