@@ -20,14 +20,14 @@ async function getYT(): Promise<Innertube> {
 
 export async function GET(request: NextRequest) {
   try {
-    const videoId = ''
+    const videoId = 'aqz-KE-bpKQ'
     if (!videoId ) {
       return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
     }
 
-    // if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
-   //   return NextResponse.json({ error: 'Invalid video ID format' }, { status: 400 })
-   // }
+     if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+      return NextResponse.json({ error: 'Invalid video ID format' }, { status: 400 })
+    }
 
     const yt = await getYT()
 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     })
 
     if (!stream) {
-      throw new Error('Failed to get download stream')
+      return NextResponse.json({ error: 'Failed to get download stream' }, { status: 400 })
     }
 
     return new NextResponse(stream, {
