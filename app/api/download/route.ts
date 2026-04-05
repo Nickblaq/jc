@@ -20,7 +20,7 @@ async function getYT(): Promise<Innertube> {
 
 export async function GET(request: NextRequest) {
   try {
-    const videoId = 'aqz-KE-bpKQ'
+    const videoId = ''
     if (!videoId ) {
       return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
     }
