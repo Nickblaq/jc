@@ -34,9 +34,8 @@ export async function GET(request: NextRequest) {
     const stream = await yt.download(videoId as string, {
       quality: '360p',          // safe muxed stream
       type: 'video+audio',
-      client: 'IOS'
-      // format: 'mp4',
-      // codec: 'avc'              // iPhone-safe
+       format: 'mp4',
+      codec: 'avc'              // iPhone-safe
     })
 
     if (!stream) {
