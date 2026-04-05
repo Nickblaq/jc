@@ -1,7 +1,7 @@
 
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef } from "react"
 import { ChannelResult, VideoItem } from '@/types'
 
 const RANK_COLOR = ['#FFD700', '#C0C0C0', '#CD7F32', '#666', '#555']
