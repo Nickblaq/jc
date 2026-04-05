@@ -1,4 +1,4 @@
-
+'use client'
 /**
 
 - components/StreamTestPanel.tsx
@@ -22,9 +22,9 @@
 - This lets you clearly see which stage of the pipeline breaks.
   */
 
-  'use client'
+  
 
-import { useState, useRef } from “react”;
+import { useState, useRef } from 'react';
 
 interface DiagStep {
 step: string;
