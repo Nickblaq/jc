@@ -21,7 +21,8 @@
 - 
 - This lets you clearly see which stage of the pipeline breaks.
   */
-  “use client”;
+
+  'use client'
 
 import { useState, useRef } from “react”;
 
