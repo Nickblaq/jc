@@ -1,26 +1,5 @@
 'use client'
-/**
 
-- components/StreamTestPanel.tsx
-- 
-- UI for the /api/stream-test diagnostic route.
-- 
-- Two modes:
-- 1. Diagnostic — GET /api/stream-test?info=1
-- ```
-   Runs through all steps, shows exactly what passed/failed.
-  ```
-- 
-- 1. Stream — GET /api/stream-test (no ?info)
-- ```
-   Fetches the actual video byte stream, builds a Blob URL,
-  ```
-- ```
-   loads it into a <video> element, and offers a Save button.
-  ```
-- 
-- This lets you clearly see which stage of the pipeline breaks.
-  */
 
   
 
