@@ -10,6 +10,7 @@ let _yt: Innertube | null = null
 async function getYT(): Promise<Innertube> {
   if (!_yt) {
     _yt = await Innertube.create({
+      client_type: "ANDROID",
       cache: new UniversalCache(false),
       generate_session_locally: true,
     })
@@ -19,7 +20,7 @@ async function getYT(): Promise<Innertube> {
 
 export async function GET(request: NextRequest) {
   try {
-    const videoId = 'hfYzamio7Bc'
+    const videoId = 'aqz-KE-bpKQ'
     if (!videoId ) {
       return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
     }
