@@ -35,7 +35,8 @@ export async function GET(request: NextRequest) {
       quality: '360p',          // safe muxed stream
       type: 'video+audio',
        format: 'mp4',
-      codec: 'avc'              // iPhone-safe
+      codec: 'avc',
+      client: 'ANDROID'
     })
 
     if (!stream) {
