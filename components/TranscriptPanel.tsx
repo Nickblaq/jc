@@ -144,7 +144,7 @@ const [results, setResults] = useState(null)
                        focus:ring-indigo-500 transition"
           />
           <button
-            onClick={fetchRaw}
+            onClick={fetchTranscript}
             disabled={loading || !input.trim()}
             className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500
                        disabled:opacity-40 disabled:cursor-not-allowed text-sm
@@ -317,11 +317,3 @@ function Spin() {
   )
 }
 
-function JsonViewer({ data }) {
-  return (
-    <details open>
-      <summary>Streaming Formats</summary>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
-    </details>
-  );
-}
