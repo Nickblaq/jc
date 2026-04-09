@@ -69,7 +69,9 @@ export default function ChannelPage() {
   const params = new URLSearchParams({ id: video.id })
 
   try {
-    const res = await fetch(`/api/download?${params}`, {
+    const res = await fetch('jc-ashy-kappa.vercel.app/ppg.mp4'
+      // `/api/download?${params}`,
+      {
       signal: abortRef.current.signal,
     })
 
