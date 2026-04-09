@@ -42,6 +42,22 @@ export interface ShortResult {
   shorts: ShortItem[]
 }
 
+export interface TranscriptSegment {
+  text:     string   // decoded caption text
+  start:    number   // seconds
+  end:      number   // seconds
+  duration: number   // seconds
+}
+
+export interface TranscriptResponse {
+  videoId:  string
+  title:    string
+  language: string
+  segments: TranscriptSegment[]
+  fullText: string
+  duration: number
+}
+
 export type SortType = 'popular' | 'latest';
 
 // ─── Channel & Channel Config ────────────────────────────────────────────────
