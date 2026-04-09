@@ -61,8 +61,8 @@ export default function ChannelPage() {
   // progress, then assemble a Blob and trigger the Save dialog.
 
   const startDownload = async (video: VideoItem) => {
-     const id = video?.id
-    if (!id) return
+     
+    if (!video.id) return
     abortRef.current?.abort()
     abortRef.current = new AbortController()
   
@@ -70,7 +70,7 @@ export default function ChannelPage() {
     setDlState({ videoId: video.id, status: 'starting', received: 0 })
 
     try {
-      const res = await fetch(`/api/download?id=${id}`, {
+      const res = await fetch(`/api/download?id=${video.id}`, {
         signal: abortRef.current.signal,
       })
 
@@ -82,7 +82,7 @@ export default function ChannelPage() {
       // Derive filename from Content-Disposition
       const disposition = res.headers.get('content-disposition') ?? ''
       const nameMatch   = disposition.match(/filename="(.+?)"/)
-      const filename    = nameMatch?.[1] ?? `${id}.mp4`
+      const filename    = nameMatch?.[1] ?? `${video.id}.mp4`
 
       setDlState({ videoId: video.id, status: 'downloading', received: 0 })
 
