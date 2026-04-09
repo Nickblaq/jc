@@ -116,7 +116,7 @@ export default function ChannelPage() {
 
     } catch (e: any) {
       if (e.name === 'AbortError') return
-      setDlState({ videoId: video.id, status: 'error', received: 0, error: e.message, code: e.code })
+      setDlState({ videoId: video.id, status: 'error', received: 0, error: e.message, })
     }
   }
 
