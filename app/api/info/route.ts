@@ -80,7 +80,8 @@ const safeTitle = (basicInfo?.title || videoId)
       has_video: f.has_video,
       has_audio: f.has_audio,
       width: f.width,
-      height: f.height
+      height: f.height,
+      url: f.url
     }))
 
     // Adaptive formats
@@ -92,7 +93,8 @@ const safeTitle = (basicInfo?.title || videoId)
       has_video: f.has_video,
       has_audio: f.has_audio,
       width: f.width,
-      height: f.height
+      height: f.height,
+      url: f.url
     }))
 
     // Choose format
