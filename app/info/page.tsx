@@ -49,7 +49,7 @@ export default function Info() {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-800 bg-gray-900 min-h-full w-full">
+    <div className="rounded-2xl border border-gray-800 min-h-full w-full">
       {/* Header */}
       <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-800">
         <span className="text-indigo-400 text-lg">📝</span>
@@ -146,20 +146,20 @@ function FormatCard({
       style={{
         padding: 12,
         borderRadius: 8,
-        border: `1px solid ${highlight ? 'red' : '#333'}`,
+        border: `1px solid ${highlight ? 'red' : '#010101'}`,
         background: '#0f0f0f'
       }}
     >
       {/* Top row */}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <strong>itag {f.itag}</strong>
-        <span>{f.quality_label || '—'}</span>
+        <strong className='text-white font-bold text-xl'>itag {f.itag}</strong>
+        <p className='text-white font-bold text-xl'>{f.quality_label || '—'}</p>
       </div>
 
       {/* Details */}
       <div style={{ fontSize: 13, marginTop: 6 }}>
-        <div><b>Type:</b> {f.mime_type}</div>
-        <div><b>Bitrate:</b> {f.bitrate}</div>
+        <div className='text-white font-bold text-xl'><b>Type:</b> {f.mime_type}</div>
+        <div className='text-white font-bold text-xl'><b>Bitrate:</b> {f.bitrate}</div>
 
         <div>
           <b>Tracks:</b>
@@ -168,7 +168,7 @@ function FormatCard({
         </div>
 
         {f.width && f.height && (
-          <div><b>Resolution:</b> {f.width}x{f.height}</div>
+          <div className='text-white font-bold text-xl'><b>Resolution:</b> {f.width}x{f.height}</div>
         )}
       </div>
     </div>
