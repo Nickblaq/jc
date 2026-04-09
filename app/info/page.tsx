@@ -118,6 +118,7 @@ export default function Info() {
      </div>
      </div>
   )
+  }
        function FormatCard({ f, highlight }: { f: StreamFormat, highlight?: boolean }) {
   return (
     <div style={{
@@ -150,7 +151,6 @@ export default function Info() {
       </div>
     </div>
   )
-}
 }
 
 
