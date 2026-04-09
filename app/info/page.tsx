@@ -47,7 +47,7 @@ export default function Info() {
     } catch (err: any) {
       setError(err?.message ?? 'Network error')
     } finally {
-      setLoading(false)
+      
     }
   }
 
@@ -76,6 +76,13 @@ export default function Info() {
         >
         Fetch</button>
 
+      {/* Error */}
+        {error && (
+          <div className="rounded-xl bg-red-950 border border-red-800 p-3">
+            <p className="text-red-400 text-xs">{error}</p>
+          </div>
+        )}
+      
       {data && (
         <div className='space-y-5'>
           <div className="flex items-center justify-between flex-wrap gap-2">
