@@ -35,16 +35,33 @@ export default function Info() {
   }
 
   return (
-    <div className='min-h-100' style={{ padding: 20 }}>
+     <div className="rounded-2xl border border-gray-800 bg-gray-900 overflow-hidden">
+      {/* Header */}
+      <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-800">
+        <span className="text-indigo-400 text-lg">📝</span>
+        <h2 className="text-sm font-semibold text-gray-300">Transcript Fetcher</h2>
+      </div>
+
+    <div className="p-5 space-y-4" style={{ padding: 20 }}>
       <input
         value={id}
         onChange={e => setId(e.target.value)}
         placeholder="Video ID"
+        className="flex-1 rounded-xl bg-gray-800 border border-gray-700 px-3 py-2 text-sm
+                       text-white placeholder:text-gray-500 focus:outline-none focus:ring-2
+                       focus:ring-indigo-500 transition"
       />
-      <button onClick={fetchStreams}>Fetch</button>
+      <button 
+        onClick={fetchStreams}
+        className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500
+                       disabled:opacity-40 disabled:cursor-not-allowed text-sm
+                       font-semibold text-white transition whitespace-nowrap"
+        >
+        Fetch</button>
 
       {data && (
-        <>
+        <div className='space-y-5'>
+          <div className="flex items-center justify-between flex-wrap gap-2">
           <h3>{data.title}</h3>
 
           <p><b>Signed URL:</b></p>
@@ -60,8 +77,11 @@ export default function Info() {
 
           <h4>Adaptive Formats</h4>
           <pre>{JSON.stringify(data.adaptive, null, 2)}</pre>
-        </>
+        </div>
+        </div>
       )}
-    </div>
+     </div>
+     </div>
   )
+       
 }
