@@ -71,7 +71,9 @@ export default function LivePage() {
     // const params = new URLSearchParams({ id: video.id, type: dlType, quality: dlType === 'audio' ? 'best' : dlQuality })
 
     try {
-      const res = await fetch(`/api/download?q=${encodeURIComponent(video.id)}`, {
+      const res = await fetch('api/test',
+       // `/api/download?q=${encodeURIComponent(video.id)}`, 
+      {
         signal: abortRef.current.signal,
       })
 
