@@ -1,0 +1,182 @@
+
+import { runStrategyAgent } from './strategy-agent'
+import { runScriptAgent } from './script-agent'
+import { runSEOAgent } from './seo-agent'
+import { runTikTokAgent } from './tiktok-agent'
+import { runThumbnailAgent } from './thumbnail-agent'
+import { generateId } from '@/lib/utils'
+import {
+  saveStrategy,
+  saveScript,
+  saveSEO,
+  saveTikTok,
+  createProduction,
+  updateProduction,
+} from '@/lib/db'
+import type {
+  AgentInput,
+  PipelineResult,
+  PipelineStage,
+  ContentStrategy,
+  Script,
+  YouTubeSEO,
+  TikTokPackage,
+  Thumbnail,
+} from '@/types'
+
+export type ProgressCallback = (stage: PipelineStage) => void
+
+export async function runPipeline(
+  input: AgentInput,
+  onProgress?: ProgressCallback
+): Promise<PipelineResult> {
+  const startTime = Date.now()
+  const productionId = generateId('prod')
+  const stages: PipelineStage[] = []
+
+  const reportStage = (name: string, status: PipelineStage['status'], error?: string) => {
+    const stage: PipelineStage = { name, status, error }
+    stages.push(stage)
+    onProgress?.(stage)
+  }
+
+  // Create production record immediately
+  let strategy: ContentStrategy | null = null
+
+  try {
+    // ── Stage 1: Strategy ──────────────────────────────────────────────────
+    reportStage('Strategy Research', 'running')
+    const stageStart = Date.now()
+
+    strategy = await runStrategyAgent(input)
+    saveStrategy({
+      id: strategy.id,
+      topic: strategy.topic,
+      angle: strategy.angle,
+      targetAudience: strategy.targetAudience,
+      contentType: strategy.contentType,
+      keywords: strategy.keywords,
+      estimatedViews: strategy.estimatedViews,
+      bestPublishTime: strategy.bestPublishTime,
+      trendData: strategy.trendData,
+    })
+
+    createProduction(productionId, strategy.id)
+    updateProduction(productionId, { status: 'generating_script' })
+
+    stages[stages.length - 1].durationMs = Date.now() - stageStart
+    reportStage('Strategy Research', 'complete')
+
+    // ── Stage 2: Script ────────────────────────────────────────────────────
+    reportStage('Script Writing', 'running')
+    const scriptStart = Date.now()
+
+    const script: Script = await runScriptAgent(strategy)
+    saveScript({
+      id: script.id,
+      strategyId: strategy.id,
+      title: script.title,
+      hook: script.hook,
+      introduction: script.introduction,
+      sections: script.sections,
+      conclusion: script.conclusion,
+      callToAction: script.callToAction,
+      totalDurationSeconds: script.totalDurationSeconds,
+      wordCount: script.wordCount,
+      ttsText: script.ttsText,
+    })
+    updateProduction(productionId, { script_id: script.id, status: 'generating_seo' })
+
+    stages[stages.length - 1].durationMs = Date.now() - scriptStart
+    reportStage('Script Writing', 'complete')
+
+    // ── Stages 3 & 4: SEO + TikTok (parallel) ────────────────────────────
+    reportStage('SEO Optimisation', 'running')
+    reportStage('TikTok Package', 'running')
+
+    const parallelStart = Date.now()
+    const [seo, tiktok] = await Promise.all([
+      runSEOAgent(strategy, script),
+      runTikTokAgent(strategy, script),
+    ])
+    const parallelDuration = Date.now() - parallelStart
+
+    saveSEO({
+      id: seo.id,
+      scriptId: script.id,
+      titles: seo.titles,
+      selectedTitle: seo.selectedTitle,
+      description: seo.description,
+      tags: seo.tags,
+      hashtags: seo.hashtags,
+      chapters: seo.chapters,
+      thumbnailCopy: seo.thumbnailCopy,
+      seoScore: seo.seoScore,
+      insights: seo.insights,
+      categoryId: seo.categoryId,
+    })
+    saveTikTok({
+      id: tiktok.id,
+      scriptId: script.id,
+      hooks: tiktok.hooks,
+      captions: tiktok.captions,
+      hashtags: tiktok.hashtags,
+      clipTimestamps: tiktok.clipTimestamps,
+      viralityScore: tiktok.viralityScore,
+      insights: tiktok.insights,
+    })
+    updateProduction(productionId, {
+      seo_id: seo.id,
+      tiktok_id: tiktok.id,
+      status: 'pending',
+    })
+
+    // Update parallel stage durations
+    const seoIdx = stages.findIndex((s) => s.name === 'SEO Optimisation' && s.status === 'running')
+    const ttIdx = stages.findIndex((s) => s.name === 'TikTok Package' && s.status === 'running')
+    if (seoIdx !== -1) stages[seoIdx].durationMs = parallelDuration
+    if (ttIdx !== -1) stages[ttIdx].durationMs = parallelDuration
+
+    reportStage('SEO Optimisation', 'complete')
+    reportStage('TikTok Package', 'complete')
+
+    // ── Stage 5: Thumbnail concept ────────────────────────────────────────
+    reportStage('Thumbnail Concept', 'running')
+    const thumbStart = Date.now()
+
+    const thumbnail: Thumbnail = await runThumbnailAgent(strategy, script, seo)
+    updateProduction(productionId, { status: 'ready' })
+
+    stages[stages.length - 1].durationMs = Date.now() - thumbStart
+    reportStage('Thumbnail Concept', 'complete')
+
+    const result: PipelineResult = {
+      productionId,
+      strategy,
+      script,
+      seo,
+      tiktok,
+      thumbnail,
+      stages,
+      totalDurationMs: Date.now() - startTime,
+    }
+
+    return result
+  } catch (error) {
+    const errMsg = error instanceof Error ? error.message : String(error)
+
+    // Mark last running stage as errored
+    const runningIdx = stages.findLastIndex((s) => s.status === 'running')
+    if (runningIdx !== -1) {
+      stages[runningIdx].status = 'error'
+      stages[runningIdx].error = errMsg
+      onProgress?.(stages[runningIdx])
+    }
+
+    if (strategy) {
+      updateProduction(productionId, { status: 'failed', status_message: errMsg })
+    }
+
+    throw error
+  }
+}
