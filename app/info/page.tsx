@@ -95,17 +95,17 @@ export default function Info() {
 
             {/* Chosen Format */}
             <section>
-              <h3 className="text-sm text-gray-400 mb-2">Chosen Format</h3>
+              <h3 className="text-lg text-white mb-2">Chosen Format</h3>
               {data.chosenFormat ? (
                 <FormatCard f={data.chosenFormat} highlight />
               ) : (
-                <p className="text-gray-500 text-sm">No format selected</p>
+                <p className="text-white text-lg">No format selected</p>
               )}
             </section>
 
             {/* Raw Formats */}
             <section>
-              <h3 className="text-sm text-gray-400 mb-2">
+              <h3 className="text-xl text-white mb-2">
                 Raw Formats ({data.raw.length})
               </h3>
               <div className="grid gap-2">
@@ -117,7 +117,7 @@ export default function Info() {
 
             {/* Adaptive Formats */}
             <section>
-              <h3 className="text-sm text-gray-400 mb-2">
+              <h3 className="text-xl text-white mb-2">
                 Adaptive Formats ({data.adaptive.length})
               </h3>
               <div className="grid gap-2">
