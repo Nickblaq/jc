@@ -16,13 +16,13 @@ export default function Info() {
   const [data, setData] = useState<StreamResponse | null>(null)
 
   const fetchStreams = async () => {
-    const res = await fetch(`/api/stream?id=${id}`)
+    const res = await fetch(`/api/info?id=${id}`)
     const json = await res.json()
     setData(json)
   }
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className='min-h-100' style={{ padding: 20 }}>
       <input
         value={id}
         onChange={e => setId(e.target.value)}
