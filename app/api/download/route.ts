@@ -46,7 +46,7 @@ const safeTitle = (basicInfo?.title || videoId)
   .replace(/\s+/g, '_')
   .slice(0, 80)
 
-    const stream =  info.download()
+    const stream =  await info.download()
     return new NextResponse(stream as any, {
       headers: {
         'Content-Disposition': `attachment; filename="${safeTitle}.mp4"`,
