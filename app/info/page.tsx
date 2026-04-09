@@ -91,7 +91,7 @@ export default function Info() {
               <h3 className="text-xl font-bold text-white truncate">
                 {data.title}
               </h3>
-              <p className='text-xl font-bold text-white'>{data.signedUrl || 'No Signed Url}</p>
+              <p className='text-xl font-bold text-white'>{data.signedUrl || 'No Signed Url'}</p>
             </div>
 
             {/* Chosen Format */}
