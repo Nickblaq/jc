@@ -2,7 +2,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import type { TranscriptSegment, TranscriptResponse } from '@/app/api/transcript/route'
+import { TranscriptSegment, TranscriptResponse } from '@/types'
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
