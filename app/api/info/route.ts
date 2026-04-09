@@ -16,6 +16,7 @@ export interface StreamFormat {
   has_audio: boolean
   width?: number
   height?: number
+  url?: string
 }
 
 export interface StreamResponse {
