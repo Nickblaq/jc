@@ -91,7 +91,7 @@ export default function StreamTestPanel() {
 
       // Stream the response body and collect into a Blob
       const reader = res.body.getReader();
-      const chunks: Uint8Array[] = [];
+      const chunks = [];
       let totalBytes = 0;
 
       const contentLength = parseInt(res.headers.get("content-length") ?? "0", 10);
