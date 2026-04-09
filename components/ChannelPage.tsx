@@ -63,6 +63,8 @@ export default function ChannelPage() {
   const startDownload = async (video: VideoItem) => {
   abortRef.current?.abort()
   abortRef.current = new AbortController()
+    
+    setDlState({ videoId: video.id, status: 'starting', received: 0 })
 
   const params = new URLSearchParams({ id: video.id })
 
@@ -90,6 +92,9 @@ export default function ChannelPage() {
         'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
       )
 
+      setDlState({ videoId: video.id, status: 'downloading', received: 50 })
+
+
       const reader = res.body!.getReader()
 
       while (true) {
@@ -105,7 +110,7 @@ export default function ChannelPage() {
 
       mediaSource.endOfStream()
     })
-
+setDlState({ videoId: video.id, status: 'done', received: 100 })
   } catch (e: any) {
     if (e.name === 'AbortError') return
     console.error(e)
