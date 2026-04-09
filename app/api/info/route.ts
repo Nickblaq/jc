@@ -105,12 +105,13 @@ const safeTitle = (basicInfo?.title || videoId)
   )
 
   if (format) {
-    // 1. Always resolve signed URL explicitly
-    if (format.decipher) {
-      signedUrl = await format.decipher(yt.session.player)
-    } else if (format.url) {
-      signedUrl = format.url
-    }
+    // IMPORTANT: do not mutate format.url
+        const url = format.url
+          ? format.url
+          : format.decipher
+          ? await format.decipher(yt.session.player)
+          null
+    signedUrl = url
 
     // 2. Keep chosenFormat clean (no mutation dependency)
     chosen = {
@@ -121,7 +122,8 @@ const safeTitle = (basicInfo?.title || videoId)
       has_video: format.has_video,
       has_audio: format.has_audio,
       width: format.width,
-      height: format.height
+      height: format.height,
+      url
       // ⚠️ intentionally NOT binding signedUrl here
     }
   }
