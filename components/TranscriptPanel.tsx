@@ -235,9 +235,7 @@ const [results, setResults] = useState(null)
       </div>
     </div>
 
-    { results && results.raw.length > 0 && (
-    <JsonViewer data={results.raw.formats} />
-    )}
+    
   )
 }
 
