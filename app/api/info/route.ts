@@ -1,0 +1,97 @@
+
+import { NextRequest, NextResponse } from 'next/server'
+import { Innertube, UniversalCache, FormatUtils } from 'youtubei.js'
+
+export const runtime = 'nodejs'
+export const maxDuration = 300
+
+// Singleton
+let _yt: Innertube | null = null
+
+async function getYT(): Promise<Innertube> {
+  if (!_yt) {
+    _yt = await Innertube.create({
+     // client_type: "ANDROID" as any,
+      cache: new UniversalCache(false),
+      generate_session_locally: true,
+    })
+  }
+  return _yt
+}
+
+export async function GET(req: NextRequest) {
+      const videoId = req.nextUrl.searchParams.get('id')!
+    if (!videoId ) {
+      return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
+    }
+
+     if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
+      return NextResponse.json({ error: 'Invalid video ID format' }, { status: 400 })
+    }
+  try {
+
+
+    const yt = await getYT()
+
+  
+
+
+    const info = await yt.getInfo(videoId as string, { client: 'TV' })
+     if (!info) {
+      return NextResponse.json({ error: 'Failed to get download stream' }, { status: 400 })
+    }
+
+const basicInfo = info.basic_info
+const safeTitle = (basicInfo?.title || videoId)
+  .replace(/[^\w\s\-().]/g, '')  // strip special chars for filename
+  .replace(/\s+/g, '_')
+  .slice(0, 80)
+
+    const streamingData = info.streaming_data
+
+  // 1) Raw formats
+  const raw = streamingData?.formats ?? []
+
+  // 2) Adaptive
+  const adaptive = streamingData?.adaptive_formats ?? []
+
+  // 3) Pick a best muxed format
+  const chosen = FormatUtils.chooseFormat(
+    { quality: 'best', type: 'video+audio', format: 'mp4' },
+    streamingData
+  )
+
+  // 4) If format exists, decipher it
+  let url = null
+  if (chosen) {
+    url = await chosen.decipher(yt.session.player)
+  }
+
+  const result = {
+    title: safeTitle,
+    raw,
+    adaptive,
+    chosenFormat: chosen,
+    signedUrl: url
+  }
+    // const stream =  await info.download()
+    return new NextResponse(result as any, {
+      headers: {
+        'Content-Disposition': `attachment; filename="${safeTitle}.mp4"`,
+        'Content-Type': 'video/mp4',
+        'Cache-Control': 'no-store',
+      },
+    })
+
+  } catch (error: any) {
+    console.error('[download route error]', error)
+
+    _yt = null
+
+    return NextResponse.json(
+      { error: error?.message || 'Failed to download video' },
+      { status: 500 }
+    )
+  }
+}
+
