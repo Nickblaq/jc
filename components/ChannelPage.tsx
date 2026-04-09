@@ -70,7 +70,7 @@ export default function ChannelPage() {
 
   try {
     //const res = await fetch(`/api/download?${params}`,{ signal: abortRef.current.signal})
-  const res = await fetch('/api/test')
+  const res = await fetch('/api/test',{ signal: abortRef.current.signal})
     if (!res.ok) {
       const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
       throw new Error(err.error ?? `Server error ${res.status}`)
