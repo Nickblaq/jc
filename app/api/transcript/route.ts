@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
     // on the WEB client and gives us stable InnerTube responses.
     let info: any
     try {
-      info = await yt.getInfo(videoId, { client: 'TV' })
+      info = await yt.getInfo(videoId, { client: 'WEB' })
     } catch (err: any) {
       _yt = null
       return NextResponse.json(
