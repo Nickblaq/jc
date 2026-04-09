@@ -78,6 +78,8 @@ export default function ChannelPage() {
       throw new Error(err.error ?? `Server error ${res.status}`)
     }
 
+    let received = 0
+
     // ── Create video + MSE ─────────────────────────────
     const videoEl = document.createElement('video')
     videoEl.setAttribute('controls', '')
@@ -92,14 +94,23 @@ export default function ChannelPage() {
         'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
       )
 
-      setDlState({ videoId: video.id, status: 'downloading', received: 50 })
-
-
       const reader = res.body!.getReader()
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
+
+          // ── Update progress ───────────────────────────
+        if (value) {
+          received += value.byteLength
+
+          // example state update
+          // setProgress({ received, total })
+          setDlState({ videoId: video.id, status: 'downloading', received })
+          
+        }
+
+        
 
         // wait until buffer is ready
         await new Promise(resolve => {
@@ -110,10 +121,10 @@ export default function ChannelPage() {
 
       mediaSource.endOfStream()
     })
-setDlState({ videoId: video.id, status: 'done', received: 100 })
+setDlState({ videoId: video.id, status: 'done', received })
   } catch (e: any) {
     if (e.name === 'AbortError') return
-    console.error(e)
+    setDlState({ videoId: video.id, status: 'error', received: 0, error: e.message })
   }
 }
 
