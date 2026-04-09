@@ -69,12 +69,8 @@ export default function ChannelPage() {
   const params = new URLSearchParams({ id: video.id })
 
   try {
-    const res = await fetch('jc-ashy-kappa.vercel.app/ppg.mp4',
-      // `/api/download?${params}`,
-      {
-      signal: abortRef.current.signal,
-    })
-
+    //const res = await fetch(`/api/download?${params}`,{ signal: abortRef.current.signal})
+  const res = await fetch('/api/test')
     if (!res.ok) {
       const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
       throw new Error(err.error ?? `Server error ${res.status}`)
