@@ -65,11 +65,10 @@ export default function ChannelPage() {
     abortRef.current = new AbortController()
 
     setDlState({ videoId: video.id, status: 'starting', received: 0 })
-
-    // const params = new URLSearchParams({ id: video.id, type: dlType, quality: dlType === 'audio' ? 'best' : dlQuality })
+    const params = new URLSearchParams({ id: video.id, type: dlType, quality: dlType === 'audio' ? 'best' : dlQuality })
 
     try {
-      const res = await fetch(`/api/download?q=${encodeURIComponent(video.id)}`, {
+      const res = await fetch(`/api/download?${params}`, {
         signal: abortRef.current.signal,
       })
 
@@ -104,13 +103,16 @@ export default function ChannelPage() {
       // when passed via spread — TypeScript is satisfied by the BlobPart union
       const blob    = new Blob(parts as BlobPart[])
       const blobUrl = URL.createObjectURL(blob)
-      const anchor  = document.createElement('a')
-      anchor.href     = blobUrl
-      anchor.download = filename
-      document.body.appendChild(anchor)
-      anchor.click()
-      document.body.removeChild(anchor)
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+      const video  = document.createElement('video')
+      video.setAttribute('controls', '');
+      video.src = URL.createObjectURL(blobUrl);
+      videoWrapper.appendChild(video);
+      // anchor.href     = blobUrl
+      // anchor.download = filename
+     // document.body.appendChild(anchor)
+     //  anchor.click()
+      // document.body.removeChild(anchor)
+     // setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
 
       setDlState({ videoId: video.id, status: 'done', received })
 
