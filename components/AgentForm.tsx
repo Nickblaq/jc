@@ -19,7 +19,7 @@ export default function AgentForm({ onResult, onLoading }: Props) {
   const [mode, setMode] = useState<Mode>('hosted')
 
   const handleSubmit = async () => {
-    if (!form.topic || !form.channelNiche || !form.targetAudience) return
+    if (!form.topic || !form.niche || !form.targetAudience) return
     onLoading(true)
     try {
       const res = await fetch('/api/analyze', {
