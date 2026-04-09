@@ -1,0 +1,51 @@
+
+import { NextRequest } from 'next/server'
+import { runPipeline } from '@/agents/orchestrator'
+import type { AgentInput, PipelineStage } from '@/types'
+
+export const runtime = 'nodejs'
+export const maxDuration = 120
+
+export async function POST(req: NextRequest) {
+  const body = (await req.json()) as AgentInput
+
+  if (!body.topic || !body.niche || !body.targetAudience) {
+    return Response.json(
+      { success: false, error: 'topic, niche, and targetAudience are required' },
+      { status: 400 }
+    )
+  }
+
+  // Use a TransformStream to stream stage updates + final result
+  const encoder = new TextEncoder()
+  const stream = new TransformStream()
+  const writer = stream.writable.getWriter()
+
+  const send = async (data: object) => {
+    await writer.write(encoder.encode(`data: ${JSON.stringify(data)}\n\n`))
+  }
+
+  // Run pipeline in background, streaming progress
+  ;(async () => {
+    try {
+      const result = await runPipeline(body, async (stage: PipelineStage) => {
+        await send({ type: 'stage', stage })
+      })
+
+      await send({ type: 'complete', result })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      await send({ type: 'error', error: message })
+    } finally {
+      await writer.close()
+    }
+  })()
+
+  return new Response(stream.readable, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+    },
+  })
+}
