@@ -15,7 +15,7 @@ export default function TranscriptPanel() {
   const [copied,  setCopied]  = useState(false)
   const [search,  setSearch]  = useState('')
   const [active,  setActive]  = useState<number | null>(null)
-
+const [results, setResults] = useState(null)
   const listRef = useRef<HTMLDivElement>(null)
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
@@ -85,6 +85,34 @@ export default function TranscriptPanel() {
     !search || s.text.toLowerCase().includes(search.toLowerCase())
   ) ?? []
 
+
+  const fetchRaw = async () => {
+    const trimmed = input.trim()
+    if (!trimmed) return
+
+    setLoading(true)
+    setError(null)
+    setResults(null)
+
+    const qs = new URLSearchParams({ id: trimmed })
+   // if (lang.trim()) qs.set('lang', lang.trim())
+
+    try {
+      const res  = await fetch(`/api/info?${qs}`)
+      const json = await res.json()
+
+      if (!res.ok) {
+        setError(json.error ?? `Error ${res.status}`)
+      } else {
+        setResults(json)
+      }
+    } catch (err: any) {
+      setError(err?.message ?? 'Network error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
@@ -116,7 +144,7 @@ export default function TranscriptPanel() {
                        focus:ring-indigo-500 transition"
           />
           <button
-            onClick={fetchTranscript}
+            onClick={fetchRaw}
             disabled={loading || !input.trim()}
             className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500
                        disabled:opacity-40 disabled:cursor-not-allowed text-sm
@@ -206,6 +234,20 @@ export default function TranscriptPanel() {
         )}
       </div>
     </div>
+
+    { results && 
+    <div>
+      {results.raw.length === 0 ? (
+      <p>No streaming raw dats</p>
+      ):(
+      <div>
+      <JsonViewer data={results.raw.formats} />
+        </div>
+      )
+      }
+    </div>
+    
+    }
   )
 }
 
@@ -285,4 +327,13 @@ function Spin() {
     <span className="inline-block w-4 h-4 border-2 border-white/30 border-t-white
                      rounded-full animate-spin" />
   )
+}
+
+function JsonViewer({ data }) {
+  return (
+    <details open>
+      <summary>Streaming Formats</summary>
+      <pre>{JSON.stringify(data, null, 2)}</pre>
+    </details>
+  );
 }
