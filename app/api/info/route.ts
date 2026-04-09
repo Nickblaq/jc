@@ -115,8 +115,9 @@ const safeTitle = (basicInfo?.title || videoId)
           width: format.width,
           height: format.height
         }
+        const tempUrl = format.url 
 
-        signedUrl = await format.decipher(yt.session.player)
+        signedUrl = await tempUrl.decipher(yt.session.player)
       }
     } catch {}
 
