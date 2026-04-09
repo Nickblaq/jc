@@ -62,21 +62,20 @@ export default function Info() {
       {data && (
         <div className='space-y-5'>
           <div className="flex items-center justify-between flex-wrap gap-2">
-          <h3>{data.title}</h3>
-
-          <p><b>Signed URL:</b></p>
-          <code style={{ wordBreak: 'break-all' }}>
+          <h3 className="text-xl font-bold text-white truncate" >{data.title}</h3>
+          <p className="text-lg font-semibold text-red truncate"><b>Signed URL:</b></p>
+          <code className="text-lg font-semibold text-red truncate" style={{ wordBreak: 'break-all' }}>
             {data.signedUrl || 'null'}
           </code>
 
-          <h4>Chosen Format</h4>
-          <pre>{JSON.stringify(data.chosenFormat, null, 2)}</pre>
+          <h4 className="text-xl font-bold text-white">Chosen Format</h4>
+          <pre className="text-lg font-semibold text-red truncate">{JSON.stringify(data.chosenFormat, null, 2)}</pre>
 
-          <h4>Raw Formats</h4>
-          <pre>{JSON.stringify(data.raw, null, 2)}</pre>
+          <h4 className="text-xl font-bold text-white">Raw Formats</h4>
+          <pre className="text-lg font-semibold text-red truncate">{JSON.stringify(data.raw, null, 2)}</pre>
 
-          <h4>Adaptive Formats</h4>
-          <pre>{JSON.stringify(data.adaptive, null, 2)}</pre>
+          <h4 className="text-xl font-bold text-white">Adaptive Formats</h4>
+          <pre className="text-lg font-bold text-red">{JSON.stringify(data.adaptive, null, 2)}</pre>
         </div>
         </div>
       )}
