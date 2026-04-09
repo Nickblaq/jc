@@ -86,7 +86,7 @@ export default function AgentForm({ onResult, onLoading }: Props) {
         <input
           type="text"
           placeholder="e.g. AI development, autonomous systems"
-          value={form.channelNiche}
+          value={form.niche}
           onChange={(e) => setForm({ ...form, niche: e.target.value })}
           className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
         />
