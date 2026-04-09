@@ -18,7 +18,7 @@ async function getYT(): Promise<Innertube> {
   return _yt
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
       const videoId = req.nextUrl.searchParams.get('id')!
     if (!videoId ) {
       return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
