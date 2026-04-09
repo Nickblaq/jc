@@ -3,6 +3,19 @@
 
 import { useState } from 'react'
 
+// types/stream.ts
+
+export interface StreamFormat {
+  itag: number
+  mime_type: string
+  bitrate: number
+  quality_label?: string
+  has_video: boolean
+  has_audio: boolean
+  width?: number
+  height?: number
+}
+
 export interface StreamResponse {
   title: string
   raw: StreamFormat[]
