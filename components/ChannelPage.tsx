@@ -102,13 +102,17 @@ export default function ChannelPage() {
       // when passed via spread — TypeScript is satisfied by the BlobPart union
       const blob    = new Blob(parts as BlobPart[], { type: 'video/mp4' })
       const blobUrl = URL.createObjectURL(blob)
+      const video = document.createElement('video');
+      video.setAttribute('controls', '');
+      video.src = URL.createObjectURL(myBlob);
+      videoWrapper.appendChild(video);
       const anchor  = document.createElement('a')
       anchor.href     = blobUrl
       anchor.download = filename
       document.body.appendChild(anchor)
       anchor.click()
       document.body.removeChild(anchor)
-      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+      // setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
 
       setDlState({ videoId: video.id, status: 'done', received })
 
