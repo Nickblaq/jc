@@ -69,10 +69,10 @@ export default function Info() {
           </code>
 
           <h4 className="text-xl font-bold text-white">Chosen Format</h4>
-          <pre className="text-lg font-semibold text-red truncate">{JSON.stringify(data.chosenFormat, null, 2)}</pre>
+          <pre className="">{JSON.stringify(data.chosenFormat, null, 2)}</pre>
 
           <h4 className="text-xl font-bold text-white">Raw Formats</h4>
-          <pre className="text-lg font-semibold text-red truncate">{JSON.stringify(data.raw, null, 2)}</pre>
+          <p className="text-lg font-semibold text-red truncate">{data.raw.length || 0}<\p>
 
           <h4 className="text-xl font-bold text-white">Adaptive Formats</h4>
           <pre className="text-lg font-bold text-red">{JSON.stringify(data.adaptive, null, 2)}</pre>
