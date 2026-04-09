@@ -1,5 +1,5 @@
 
-import { generateJSON } from '@/lib/claude'
+import { generateJSON } from '@/lib/agrnt'
 import { generateId } from '@/lib/utils'
 import type { ContentStrategy, Script, TikTokPackage, TikTokClip } from '@/types'
 
