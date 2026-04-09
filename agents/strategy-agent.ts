@@ -1,5 +1,5 @@
 
-import { generateJSON } from '@/lib/claude'
+import { generateJSON } from '@/lib/agent'
 import {
   fetchTrendingVideos,
   extractTrendingTopics,
