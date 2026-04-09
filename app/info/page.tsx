@@ -84,27 +84,61 @@ export default function Info() {
         )}
       
       {data && (
-        <div className='space-y-5'>
-          <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className='space-y-5 min-h-full padding-8'>
+          <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold text-white truncate" >{data.title}</h3>
           <p className="text-lg font-semibold text-red truncate"><b>Signed URL:</b></p>
           <code className="text-lg font-semibold text-red truncate" style={{ wordBreak: 'break-all' }}>
             {data.signedUrl || 'null'}
           </code>
 
-          <h4 className="text-xl font-bold text-white">Chosen Format</h4>
-          <pre className="">{JSON.stringify(data.chosenFormat, null, 2)}</pre>
-
-          <h4 className="text-xl font-bold text-white">Raw Formats</h4>
-          <p className="text-lg font-semibold text-red truncate">{data.raw.length || 0}</p>
-
-          <h4 className="text-xl font-bold text-white">Adaptive Formats</h4>
-          <pre className="text-lg font-bold text-red">{JSON.stringify(data.adaptive, null, 2)}</pre>
+           <section>
+            <h3>Adaptive Formats ({data.adaptive.length})</h3>
+            <div style={{ display: 'grid', gap: 10 }}>
+              {data.adaptive.map((f, i) => (
+                <FormatCard key={i} f={f} />
+              ))}
+            </div>
+          </section>
         </div>
         </div>
       )}
      </div>
      </div>
   )
-       
+       function FormatCard({ f, highlight }: { f: StreamFormat, highlight?: boolean }) {
+  return (
+    <div style={{
+      padding: 12,
+      borderRadius: 8,
+      border: `1px solid ${highlight ? 'red' : '#333'}`,
+      background: '#0f0f0f'
+    }}>
+      
+      {/* Top row */}
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+        <strong>itag {f.itag}</strong>
+        <span>{f.quality_label || '—'}</span>
+      </div>
+
+      {/* Details */}
+      <div style={{ fontSize: 13, marginTop: 6 }}>
+        <div><b>Type:</b> {f.mime_type}</div>
+        <div><b>Bitrate:</b> {f.bitrate}</div>
+
+        <div>
+          <b>Tracks:</b> 
+          {f.has_video ? ' 🎥' : ''} 
+          {f.has_audio ? ' 🔊' : ''}
+        </div>
+
+        {f.width && f.height && (
+          <div><b>Resolution:</b> {f.width}x{f.height}</div>
+        )}
+      </div>
+    </div>
+  )
 }
+}
+
+
