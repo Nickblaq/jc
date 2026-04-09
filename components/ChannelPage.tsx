@@ -61,67 +61,56 @@ export default function ChannelPage() {
   // progress, then assemble a Blob and trigger the Save dialog.
 
   const startDownload = async (video: VideoItem) => {
-    abortRef.current?.abort()
-    abortRef.current = new AbortController()
+  abortRef.current?.abort()
+  abortRef.current = new AbortController()
 
-    setDlState({ videoId: video.id, status: 'starting', received: 0 })
-    const params = new URLSearchParams({ id: video.id, type: dlType, quality: dlType === 'audio' ? 'best' : dlQuality })
+  const params = new URLSearchParams({ id: video.id })
 
-    try {
-      const res = await fetch(`/api/download?${params}`, {
-        signal: abortRef.current.signal,
-      })
+  try {
+    const res = await fetch(`/api/download?${params}`, {
+      signal: abortRef.current.signal,
+    })
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
-        throw new Error(err.error ?? `Server error ${res.status}`)
-      }
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: `HTTP ${res.status}` }))
+      throw new Error(err.error ?? `Server error ${res.status}`)
+    }
 
-      // Derive filename from Content-Disposition
-      const disposition = res.headers.get('content-disposition') ?? ''
-      const nameMatch   = disposition.match(/filename="(.+?)"/)
-      const filename    = nameMatch?.[1] ?? `${video.id}.mp4`
+    // ── Create video + MSE ─────────────────────────────
+    const videoEl = document.createElement('video')
+    videoEl.setAttribute('controls', '')
+    document.body.appendChild(videoEl)
 
-      setDlState({ videoId: video.id, status: 'downloading', received: 0 })
+    const mediaSource = new MediaSource()
+    videoEl.src = URL.createObjectURL(mediaSource)
 
-      // Read the ReadableStream in chunks
-      // Fix: collect as Uint8Array[], then spread into Blob constructor
-      // This avoids the ArrayBufferLike TS error from the previous version
+    mediaSource.addEventListener('sourceopen', async () => {
+      // ⚠️ Codec must match your stream
+      const sourceBuffer = mediaSource.addSourceBuffer(
+        'video/mp4; codecs="avc1.42E01E, mp4a.40.2"'
+      )
+
       const reader = res.body!.getReader()
-      const parts:  Uint8Array[] = []
-      let received = 0
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) break
-        parts.push(value)
-        received += value.byteLength
-        setDlState({ videoId: video.id, status: 'downloading', received })
+
+        // wait until buffer is ready
+        await new Promise(resolve => {
+          sourceBuffer.addEventListener('updateend', resolve, { once: true })
+          sourceBuffer.appendBuffer(value!)
+        })
       }
 
-      // Blob constructor accepts Uint8Array[] without type issues
-      // when passed via spread — TypeScript is satisfied by the BlobPart union
-      // const blob    = new Blob(parts as BlobPart[])
-      // const blobUrl = URL.createObjectURL(blob)
-      const videoEl  = document.createElement('video')
-      videoEl.setAttribute('controls', '');
-      videoEl.src = URL.createObjectURL(parts);
-      document.body.appendChild(videoEl);
-      // anchor.href     = blobUrl
-      // anchor.download = filename
-     // document.body.appendChild(anchor)
-     //  anchor.click()
-      // document.body.removeChild(anchor)
-     // setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+      mediaSource.endOfStream()
+    })
 
-      setDlState({ videoId: video.id, status: 'done', received })
-
-    } catch (e: any) {
-      if (e.name === 'AbortError') return
-      setDlState({ videoId: video.id, status: 'error', received: 0, error: e.message, })
-    }
+  } catch (e: any) {
+    if (e.name === 'AbortError') return
+    console.error(e)
   }
-
+}
 
   const cancelDownload = () => {
     abortRef.current?.abort()
