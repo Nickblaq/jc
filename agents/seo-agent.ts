@@ -1,7 +1,7 @@
 
-import { generateJSON } from '@/lib/claude'
+import { generateJSON } from '@/lib/agent'
 import { generateId } from '@/lib/utils'
-import type { ContentStrategy, Script, YouTubeSEO, Chapter } from '@/types'
+import { ContentStrategy, Script, YouTubeSEO, Chapter } from '@/types'
 
 interface SEOOutput {
   titles: string[]
