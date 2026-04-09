@@ -15,7 +15,7 @@ export default function TranscriptPanel() {
   const [copied,  setCopied]  = useState(false)
   const [search,  setSearch]  = useState('')
   const [active,  setActive]  = useState<number | null>(null)
-const [results, setResults] = useState(null)
+
   const listRef = useRef<HTMLDivElement>(null)
 
   // ── Fetch ─────────────────────────────────────────────────────────────────
@@ -86,33 +86,7 @@ const [results, setResults] = useState(null)
   ) ?? []
 
 
-  const fetchRaw = async () => {
-    const trimmed = input.trim()
-    if (!trimmed) return
-
-    setLoading(true)
-    setError(null)
-    setResults(null)
-
-    const qs = new URLSearchParams({ id: trimmed })
-   // if (lang.trim()) qs.set('lang', lang.trim())
-
-    try {
-      const res  = await fetch(`/api/info?${qs}`)
-      const json = await res.json()
-
-      if (!res.ok) {
-        setError(json.error ?? `Error ${res.status}`)
-      } else {
-        setResults(json)
-      }
-    } catch (err: any) {
-      setError(err?.message ?? 'Network error')
-    } finally {
-      setLoading(false)
-    }
-  }
-
+  
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
