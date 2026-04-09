@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useRef } from ‘react’
-import { TranscriptSegment, TranscriptResponse } from ‘@/types’
+import { useState, useRef } from 'react'
+import { TranscriptSegment, TranscriptResponse } from '@/types'
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function TranscriptPanel() {
-const [input,   setInput]   = useState(’’)
-const [lang,    setLang]    = useState(’’)
+const [input,   setInput]   = useState('')
+const [lang,    setLang]    = useState('')
 const [data,    setData]    = useState<TranscriptResponse | null>(null)
 const [loading, setLoading] = useState(false)
 const [error,   setError]   = useState<string | null>(null)
 const [copied,  setCopied]  = useState(false)
-const [search,  setSearch]  = useState(’’)
+const [search,  setSearch]  = useState('')
 const [active,  setActive]  = useState<number | null>(null)
 
 const listRef = useRef<HTMLDivElement>(null)
