@@ -68,10 +68,10 @@ const safeTitle = (basicInfo?.title || videoId)
   .replace(/\s+/g, '_')
   .slice(0, 80)
 
-    const streamingData = info.streaming_data
+    
 
   // Raw formats
-    const raw = (streaming?.formats ?? []).map(f => ({
+    const raw = (info.streaming_data?.formats ?? []).map(f => ({
       itag: f.itag,
       mime_type: f.mime_type,
       bitrate: f.bitrate,
@@ -83,7 +83,7 @@ const safeTitle = (basicInfo?.title || videoId)
     }))
 
     // Adaptive formats
-    const adaptive = (streaming?.adaptive_formats ?? []).map(f => ({
+    const adaptive = (info.streaming_data?.adaptive_formats ?? []).map(f => ({
       itag: f.itag,
       mime_type: f.mime_type,
       bitrate: f.bitrate,
@@ -101,7 +101,7 @@ const safeTitle = (basicInfo?.title || videoId)
     try {
       const format = FormatUtils.chooseFormat(
         { quality: 'best', type: 'video+audio', format: 'mp4' },
-        streaming
+        info.streaming_data
       )
 
       if (format) {
