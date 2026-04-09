@@ -10,7 +10,7 @@ const PROMPT = (topic: string, niche: string, targetAudience: string) => `
 You are an expert YouTube SEO strategist and growth consultant.
 
 Channel context:
-- Niche: ${channelNiche}
+- Niche: ${niche}
 - Target audience: ${targetAudience}
 - Video topic: ${topic}
 
