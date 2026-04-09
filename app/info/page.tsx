@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react'
@@ -25,109 +24,132 @@ export interface StreamResponse {
 }
 
 export default function Info() {
-  const [id, setId] = useState('ZXCWQBR6KHW')
-  const [error,   setError]   = useState<string | null>(null)
+  const [id, setId] = useState('dQw4w9WgXcQ') // valid test ID
+  const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<StreamResponse | null>(null)
 
   const fetchStreams = async () => {
-  
+    setError(null)
 
     try {
-      const res  = await fetch(`/api/info?id=${id}`)
+      const res = await fetch(`/api/info?id=${id}`)
       const json = await res.json()
 
       if (!res.ok) {
         setError(json.error ?? `Error ${res.status}`)
+        setData(null)
       } else {
         setData(json)
+        setError(null)
       }
     } catch (err: any) {
       setError(err?.message ?? 'Network error')
-    
+      setData(null)
+    }
   }
 
   return (
-     <div className="rounded-2xl border border-gray-800 bg-gray-900 overflow-hidden">
+    <div className="rounded-2xl border border-gray-800 bg-gray-900 overflow-hidden">
       {/* Header */}
       <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-800">
         <span className="text-indigo-400 text-lg">📝</span>
-        <h2 className="text-sm font-semibold text-gray-300">Transcript Fetcher</h2>
+        <h2 className="text-sm font-semibold text-gray-300">Stream Inspector</h2>
       </div>
 
-    <div className="p-5 space-y-4" style={{ padding: 20 }}>
-      <input
-        value={id}
-        onChange={e => setId(e.target.value)}
-        placeholder="Video ID"
-        className="flex-1 rounded-xl bg-gray-800 border border-gray-700 px-3 py-2 text-sm
-                       text-white placeholder:text-gray-500 focus:outline-none focus:ring-2
-                       focus:ring-indigo-500 transition"
-      />
-      <button 
-        onClick={fetchStreams}
-        className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500
-                       disabled:opacity-40 disabled:cursor-not-allowed text-sm
-                       font-semibold text-white transition whitespace-nowrap"
-        >
-        Fetch</button>
+      <div className="p-5 space-y-4">
+        <input
+          value={id}
+          onChange={e => setId(e.target.value)}
+          placeholder="Video ID"
+          className="w-full rounded-xl bg-gray-800 border border-gray-700 px-3 py-2 text-sm
+                     text-white placeholder:text-gray-500 focus:outline-none focus:ring-2
+                     focus:ring-indigo-500 transition"
+        />
 
-      {/* Error */}
+        <button
+          onClick={fetchStreams}
+          className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500
+                     disabled:opacity-40 disabled:cursor-not-allowed text-sm
+                     font-semibold text-white transition"
+        >
+          Fetch
+        </button>
+
+        {/* Error */}
         {error && (
           <div className="rounded-xl bg-red-950 border border-red-800 p-3">
             <p className="text-red-400 text-xs">{error}</p>
           </div>
         )}
-      
-      {data && (
-        <div className='space-y-5 min-h-full padding-8'>
-          <div className="flex items-center justify-between">
-          <h3 className="text-xl font-bold text-white truncate" >{data.title}</h3>
- 
+
+        {/* Data */}
+        {data && (
+          <div className="space-y-6">
+
+            {/* Title */}
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-bold text-white truncate">
+                {data.title}
+              </h3>
+            </div>
 
             {/* Chosen Format */}
-          <section style={{ marginBottom: 30 }}>
-            <h3>Chosen Format</h3>
-            {data.chosenFormat ? (
-              <FormatCard f={data.chosenFormat} highlight />
-            ) : (
-              <p>No format selected</p>
-            )}
-          </section>
+            <section>
+              <h3 className="text-sm text-gray-400 mb-2">Chosen Format</h3>
+              {data.chosenFormat ? (
+                <FormatCard f={data.chosenFormat} highlight />
+              ) : (
+                <p className="text-gray-500 text-sm">No format selected</p>
+              )}
+            </section>
 
-          {/* Raw Formats */}
-          <section style={{ marginBottom: 30 }}>
-            <h3>Raw Formats ({data.raw.length})</h3>
-            <div style={{ display: 'grid', gap: 10 }}>
-              {data.raw.map((f, i) => (
-                <FormatCard key={i} f={f} />
-              ))}
-            </div>
-          </section>
+            {/* Raw Formats */}
+            <section>
+              <h3 className="text-sm text-gray-400 mb-2">
+                Raw Formats ({data.raw.length})
+              </h3>
+              <div className="grid gap-2">
+                {data.raw.map((f, i) => (
+                  <FormatCard key={i} f={f} />
+                ))}
+              </div>
+            </section>
 
-           <section>
-            <h3>Adaptive Formats ({data.adaptive.length})</h3>
-            <div style={{ display: 'grid', gap: 10 }}>
-              {data.adaptive.map((f, i) => (
-                <FormatCard key={i} f={f} />
-              ))}
-            </div>
-          </section>
-        </div>
-        </div>
-      )}
-     </div>
-     </div>
+            {/* Adaptive Formats */}
+            <section>
+              <h3 className="text-sm text-gray-400 mb-2">
+                Adaptive Formats ({data.adaptive.length})
+              </h3>
+              <div className="grid gap-2">
+                {data.adaptive.map((f, i) => (
+                  <FormatCard key={i} f={f} />
+                ))}
+              </div>
+            </section>
+
+          </div>
+        )}
+      </div>
+    </div>
   )
-  }
-       function FormatCard({ f, highlight }: { f: StreamFormat, highlight?: boolean }) {
+}
+
+function FormatCard({
+  f,
+  highlight
+}: {
+  f: StreamFormat
+  highlight?: boolean
+}) {
   return (
-    <div style={{
-      padding: 12,
-      borderRadius: 8,
-      border: `1px solid ${highlight ? 'red' : '#333'}`,
-      background: '#0f0f0f'
-    }}>
-      
+    <div
+      style={{
+        padding: 12,
+        borderRadius: 8,
+        border: `1px solid ${highlight ? 'red' : '#333'}`,
+        background: '#0f0f0f'
+      }}
+    >
       {/* Top row */}
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
         <strong>itag {f.itag}</strong>
@@ -140,8 +162,8 @@ export default function Info() {
         <div><b>Bitrate:</b> {f.bitrate}</div>
 
         <div>
-          <b>Tracks:</b> 
-          {f.has_video ? ' 🎥' : ''} 
+          <b>Tracks:</b>
+          {f.has_video ? ' 🎥' : ''}
           {f.has_audio ? ' 🔊' : ''}
         </div>
 
@@ -152,5 +174,3 @@ export default function Info() {
     </div>
   )
 }
-
-
