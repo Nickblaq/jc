@@ -26,12 +26,29 @@ export interface StreamResponse {
 
 export default function Info() {
   const [id, setId] = useState('')
+  const [error,   setError]   = useState<string | null>(null)
   const [data, setData] = useState<StreamResponse | null>(null)
 
   const fetchStreams = async () => {
     const res = await fetch(`/api/info?id=${id}`)
+    
     const json = await res.json()
     setData(json)
+
+    try {
+      const res  = await fetch(`/api/info?id=${id}`)
+      const json = await res.json()
+
+      if (!res.ok) {
+        setError(json.error ?? `Error ${res.status}`)
+      } else {
+        setData(json)
+      }
+    } catch (err: any) {
+      setError(err?.message ?? 'Network error')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
