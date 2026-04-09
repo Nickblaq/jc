@@ -47,7 +47,7 @@ const safeTitle = (basicInfo?.title || videoId)
   .slice(0, 80)
 
     const stream =  info.download()
-    return new NextResponse(stream, {
+    return new NextResponse(stream as any, {
       headers: {
         'Content-Disposition': `attachment; filename="${safeTitle}.mp4"`,
         'Content-Type': 'video/mp4',
