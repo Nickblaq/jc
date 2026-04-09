@@ -280,8 +280,9 @@ export interface PipelineResult {
 
 export interface AgentInput {
   topic: string
-  channelNiche: string
+  niche: string
   targetAudience: string
+  channelConfig?: ChannelConfig
 }
 
 export interface AgentOutput {
