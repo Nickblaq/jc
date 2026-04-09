@@ -1,7 +1,7 @@
 
 import { generateJSON } from '@/lib/agent'
 import { generateId } from '@/lib/utils'
-import type { ContentStrategy, Script, TikTokPackage, TikTokClip } from '@/types'
+import { ContentStrategy, Script, TikTokPackage, TikTokClip } from '@/types'
 
 interface TikTokOutput {
   hooks: string[]
