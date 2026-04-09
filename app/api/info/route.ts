@@ -110,7 +110,7 @@ const safeTitle = (basicInfo?.title || videoId)
           ? format.url
           : format.decipher
           ? await format.decipher(yt.session.player)
-          null
+          :null
     signedUrl = url
 
     // 2. Keep chosenFormat clean (no mutation dependency)
