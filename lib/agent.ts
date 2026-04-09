@@ -6,7 +6,7 @@ import { AgentInput, AgentOutput } from '@/types'
 // Singleton client — reused across all agent calls
 let _client: Anthropic | null = null
 
-const PROMPT = (topic: string, channelNiche: string, targetAudience: string) => `
+const PROMPT = (topic: string, niche: string, targetAudience: string) => `
 You are an expert YouTube SEO strategist and growth consultant.
 
 Channel context:
@@ -40,7 +40,7 @@ export async function runAgentHosted(input: AgentInput): Promise<AgentOutput> {
       messages: [
         {
           role: 'user',
-          content: PROMPT(input.topic, input.channelNiche, input.targetAudience),
+          content: PROMPT(input.topic, input.niche, input.targetAudience),
         },
       ],
     }),
@@ -65,7 +65,7 @@ export async function runAgentWithKey(input: AgentInput): Promise<AgentOutput> {
     messages: [
       {
         role: 'user',
-        content: PROMPT(input.topic, input.channelNiche, input.targetAudience),
+        content: PROMPT(input.topic, input.niche, input.targetAudience),
       },
     ],
   })
