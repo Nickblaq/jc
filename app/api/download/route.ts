@@ -19,8 +19,7 @@ async function getYT(): Promise<Innertube> {
 }
 
 export async function GET(request: NextRequest) {
-  try {
-    const videoId = 'aqz-KE-bpKQ'
+      const videoId = req.nextUrl.searchParams.get('id')!
     if (!videoId ) {
       return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
     }
@@ -28,25 +27,29 @@ export async function GET(request: NextRequest) {
      if (!/^[a-zA-Z0-9_-]{11}$/.test(videoId)) {
       return NextResponse.json({ error: 'Invalid video ID format' }, { status: 400 })
     }
+  try {
+
 
     const yt = await getYT()
 
-    const stream = await yt.download(videoId as string, {
-      quality: '360p',          // safe muxed stream
-      type: 'video+audio',
-       format: 'mp4',
-      codec: 'avc',
-      client: 'TV',
-      range: { start: 0, end: 500000 }
-    })
+  
 
-    if (!stream) {
+
+    const info = await yt.getInfo(videoId as string, { client: 'TV' })
+     if (!info) {
       return NextResponse.json({ error: 'Failed to get download stream' }, { status: 400 })
     }
 
+const basicInfo = info.basic_info
+const safeTitle = (basicInfo?.title || videoId)
+  .replace(/[^\w\s\-().]/g, '')  // strip special chars for filename
+  .replace(/\s+/g, '_')
+  .slice(0, 80)
+
+    const stream =  info.download()
     return new NextResponse(stream, {
       headers: {
-        'Content-Disposition': `attachment; filename="${videoId}.mp4"`,
+        'Content-Disposition': `attachment; filename="${safeTitle}.mp4"`,
         'Content-Type': 'video/mp4',
         'Cache-Control': 'no-store',
       },
