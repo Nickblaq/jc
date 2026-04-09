@@ -25,7 +25,7 @@ interface DiagResult {
 
 type LoadState = "idle" | "running" | "done" | "error";
 
-export default function StreamTestPanel() {
+export default function StreamPanel() {
   const [diagState, setDiagState] = useState<LoadState>("idle");
   const [diagResult, setDiagResult] = useState<DiagResult | null>(null);
 
