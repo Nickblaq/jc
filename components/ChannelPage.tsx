@@ -63,11 +63,12 @@ export default function ChannelPage() {
   const startDownload = async (video: VideoItem) => {
     abortRef.current?.abort()
     abortRef.current = new AbortController()
+   
 
     setDlState({ videoId: video.id, status: 'starting', received: 0 })
 
     try {
-      const res = await fetch(`/api/download?id=${video.id}`, {
+      const res = await fetch(`/api/download?id=${dlState.videoId}`, {
         signal: abortRef.current.signal,
       })
 
@@ -79,7 +80,7 @@ export default function ChannelPage() {
       // Derive filename from Content-Disposition
       const disposition = res.headers.get('content-disposition') ?? ''
       const nameMatch   = disposition.match(/filename="(.+?)"/)
-      const filename    = nameMatch?.[1] ?? `${video.id}.mp4`
+      const filename    = nameMatch?.[1] ?? `${dlState.videoId}.mp4`
 
       setDlState({ videoId: video.id, status: 'downloading', received: 0 })
 
