@@ -49,14 +49,14 @@ export default function Info() {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-800 bg-gray-900 overflow-hidden">
+    <div className="rounded-2xl border border-gray-800 bg-gray-900 min-h-full w-full">
       {/* Header */}
       <div className="flex items-center gap-2 px-5 py-4 border-b border-gray-800">
         <span className="text-indigo-400 text-lg">📝</span>
         <h2 className="text-sm font-semibold text-gray-300">Stream Inspector</h2>
       </div>
 
-      <div className="p-5 space-y-4">
+    
         <input
           value={id}
           onChange={e => setId(e.target.value)}
@@ -129,7 +129,7 @@ export default function Info() {
 
           </div>
         )}
-      </div>
+      
     </div>
   )
 }
