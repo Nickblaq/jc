@@ -99,27 +99,35 @@ const safeTitle = (basicInfo?.title || videoId)
     let signedUrl: string | null = null
 
     try {
-      const format = FormatUtils.chooseFormat(
-        { quality: 'best', type: 'video+audio', format: 'mp4' },
-        info.streaming_data
-      )
+  const format = FormatUtils.chooseFormat(
+    { quality: 'best', type: 'video+audio', format: 'mp4' },
+    info.streaming_data
+  )
 
-      if (format) {
-        chosen = {
-          itag: format.itag,
-          mime_type: format.mime_type,
-          bitrate: format.bitrate,
-          quality_label: format.quality_label,
-          has_video: format.has_video,
-          has_audio: format.has_audio,
-          width: format.width,
-          height: format.height
-        }
-        const tempUrl = format.url 
+  if (format) {
+    // 1. Always resolve signed URL explicitly
+    if (format.decipher) {
+      signedUrl = await format.decipher(yt.session.player)
+    } else if (format.url) {
+      signedUrl = format.url
+    }
 
-        signedUrl = await tempUrl.decipher(yt.session.player)
-      }
-    } catch {}
+    // 2. Keep chosenFormat clean (no mutation dependency)
+    chosenFormat = {
+      itag: format.itag,
+      mime_type: format.mime_type,
+      bitrate: format.bitrate,
+      quality_label: format.quality_label,
+      has_video: format.has_video,
+      has_audio: format.has_audio,
+      width: format.width,
+      height: format.height
+      // ⚠️ intentionally NOT binding signedUrl here
+    }
+  }
+} catch (e) {
+  console.warn('Decipher failed:', e)
+}
 
     const res: StreamResponse = {
       title: safeTitle,
