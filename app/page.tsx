@@ -17,7 +17,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
           {/* Left column */}
           <div className="space-y-5">
-            <ChannelPage />
+          
             <StreamPanel />
           </div>
 
