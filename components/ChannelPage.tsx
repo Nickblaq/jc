@@ -101,12 +101,12 @@ export default function ChannelPage() {
 
       // Blob constructor accepts Uint8Array[] without type issues
       // when passed via spread — TypeScript is satisfied by the BlobPart union
-      const blob    = new Blob(parts as BlobPart[])
-      const blobUrl = URL.createObjectURL(blob)
+      // const blob    = new Blob(parts as BlobPart[])
+      // const blobUrl = URL.createObjectURL(blob)
       const videoEl  = document.createElement('video')
       videoEl.setAttribute('controls', '');
-      videoEl.src = URL.createObjectURL(blobUrl);
-      videoWrapper.appendChild(videoEl);
+      videoEl.src = URL.createObjectURL(parts);
+      document.body.appendChild(videoEl);
       // anchor.href     = blobUrl
       // anchor.download = filename
      // document.body.appendChild(anchor)
