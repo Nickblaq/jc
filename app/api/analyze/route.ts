@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   try {
     const body: AgentInput & { mode?: 'hosted' | 'api-key' } = await req.json()
 
-    if (!body.topic || !body.channelNiche || !body.targetAudience) {
+    if (!body.topic || !body.niche || !body.targetAudience) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
