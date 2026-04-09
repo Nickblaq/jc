@@ -67,7 +67,7 @@ export default function ChannelPage() {
     setDlState({ videoId: video.id, status: 'starting', received: 0 })
 
     try {
-      const res = await fetch(`/api/download?q=${video.id}`, {
+      const res = await fetch(`/api/download?id=${video.id}`, {
         signal: abortRef.current.signal,
       })
 
@@ -100,7 +100,7 @@ export default function ChannelPage() {
 
       // Blob constructor accepts Uint8Array[] without type issues
       // when passed via spread — TypeScript is satisfied by the BlobPart union
-      const blob    = new Blob(parts as BlobPart[])
+      const blob    = new Blob(parts as BlobPart[], { type: 'video/mp4' })
       const blobUrl = URL.createObjectURL(blob)
       const anchor  = document.createElement('a')
       anchor.href     = blobUrl
