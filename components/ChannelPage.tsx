@@ -66,11 +66,11 @@ export default function ChannelPage() {
     abortRef.current?.abort()
     abortRef.current = new AbortController()
   
-
+const params = new URLSearchParams({ id: video.id, type: dlType, quality: dlType === 'audio' ? 'best' : dlQuality })
     setDlState({ videoId: video.id, status: 'starting', received: 0 })
 
     try {
-      const res = await fetch(`/api/download?id=${video.id}`, {
+      const res = await fetch(`/api/download?id=${encodeURIComponent(video.id)}`, {
         signal: abortRef.current.signal,
       })
 
