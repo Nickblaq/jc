@@ -61,16 +61,15 @@ export default function ChannelPage() {
   // progress, then assemble a Blob and trigger the Save dialog.
 
   const startDownload = async (video: VideoItem) => {
-     
-    if (!video.id) return
     abortRef.current?.abort()
     abortRef.current = new AbortController()
-  
-const params = new URLSearchParams({ id: video.id, type: dlType, quality: dlType === 'audio' ? 'best' : dlQuality })
+
     setDlState({ videoId: video.id, status: 'starting', received: 0 })
 
+    // const params = new URLSearchParams({ id: video.id, type: dlType, quality: dlType === 'audio' ? 'best' : dlQuality })
+
     try {
-      const res = await fetch(`/api/download?id=${encodeURIComponent(video.id)}`, {
+      const res = await fetch(`/api/download?q=${encodeURIComponent(video.id)}`, {
         signal: abortRef.current.signal,
       })
 
@@ -103,27 +102,24 @@ const params = new URLSearchParams({ id: video.id, type: dlType, quality: dlType
 
       // Blob constructor accepts Uint8Array[] without type issues
       // when passed via spread — TypeScript is satisfied by the BlobPart union
-      const blob    = new Blob(parts as BlobPart[], { type: 'video/mp4' })
+      const blob    = new Blob(parts as BlobPart[])
       const blobUrl = URL.createObjectURL(blob)
-      const video = document.createElement('video');
-      video.setAttribute('controls', '');
-      video.src = URL.createObjectURL(myBlob);
-      videoWrapper.appendChild(video);
       const anchor  = document.createElement('a')
       anchor.href     = blobUrl
       anchor.download = filename
       document.body.appendChild(anchor)
       anchor.click()
       document.body.removeChild(anchor)
-      // setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000)
 
       setDlState({ videoId: video.id, status: 'done', received })
 
     } catch (e: any) {
       if (e.name === 'AbortError') return
-      setDlState({ videoId: video.id, status: 'error', received: 0, error: e.message })
+      setDlState({ videoId: video.id, status: 'error', received: 0, error: e.message, code: e.code })
     }
   }
+
 
   const cancelDownload = () => {
     abortRef.current?.abort()
