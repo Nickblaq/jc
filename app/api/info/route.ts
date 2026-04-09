@@ -121,7 +121,7 @@ const safeTitle = (basicInfo?.title || videoId)
     } catch {}
 
     const res: StreamResponse = {
-      title: safeTitle
+      title: safeTitle,
       raw,
       adaptive,
       chosenFormat: chosen,
