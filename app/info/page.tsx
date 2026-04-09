@@ -25,15 +25,12 @@ export interface StreamResponse {
 }
 
 export default function Info() {
-  const [id, setId] = useState('')
+  const [id, setId] = useState('ZXCWQBR6KHW')
   const [error,   setError]   = useState<string | null>(null)
   const [data, setData] = useState<StreamResponse | null>(null)
 
   const fetchStreams = async () => {
-    const res = await fetch(`/api/info?id=${id}`)
-    
-    const json = await res.json()
-    setData(json)
+  
 
     try {
       const res  = await fetch(`/api/info?id=${id}`)
@@ -46,9 +43,7 @@ export default function Info() {
       }
     } catch (err: any) {
       setError(err?.message ?? 'Network error')
-    } finally {
-      
-    }
+    
   }
 
   return (
@@ -87,10 +82,27 @@ export default function Info() {
         <div className='space-y-5 min-h-full padding-8'>
           <div className="flex items-center justify-between">
           <h3 className="text-xl font-bold text-white truncate" >{data.title}</h3>
-          <p className="text-lg font-semibold text-red truncate"><b>Signed URL:</b></p>
-          <code className="text-lg font-semibold text-red truncate" style={{ wordBreak: 'break-all' }}>
-            {data.signedUrl || 'null'}
-          </code>
+ 
+
+            {/* Chosen Format */}
+          <section style={{ marginBottom: 30 }}>
+            <h3>Chosen Format</h3>
+            {data.chosenFormat ? (
+              <FormatCard f={data.chosenFormat} highlight />
+            ) : (
+              <p>No format selected</p>
+            )}
+          </section>
+
+          {/* Raw Formats */}
+          <section style={{ marginBottom: 30 }}>
+            <h3>Raw Formats ({data.raw.length})</h3>
+            <div style={{ display: 'grid', gap: 10 }}>
+              {data.raw.map((f, i) => (
+                <FormatCard key={i} f={f} />
+              ))}
+            </div>
+          </section>
 
            <section>
             <h3>Adaptive Formats ({data.adaptive.length})</h3>
