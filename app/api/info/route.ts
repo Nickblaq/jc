@@ -5,6 +5,27 @@ import { Innertube, UniversalCache, FormatUtils } from 'youtubei.js'
 export const runtime = 'nodejs'
 export const maxDuration = 300
 
+// types/stream.ts
+
+export interface StreamFormat {
+  itag: number
+  mime_type: string
+  bitrate: number
+  quality_label?: string
+  has_video: boolean
+  has_audio: boolean
+  width?: number
+  height?: number
+}
+
+export interface StreamResponse {
+  title: string
+  raw: StreamFormat[]
+  adaptive: StreamFormat[]
+  chosenFormat: StreamFormat | null
+  signedUrl: string | null
+}
+
 // Singleton
 let _yt: Innertube | null = null
 
@@ -49,39 +70,65 @@ const safeTitle = (basicInfo?.title || videoId)
 
     const streamingData = info.streaming_data
 
-  // 1) Raw formats
-  const raw = streamingData?.formats ?? []
+  // Raw formats
+    const raw = (streaming?.formats ?? []).map(f => ({
+      itag: f.itag,
+      mime_type: f.mime_type,
+      bitrate: f.bitrate,
+      quality_label: f.quality_label,
+      has_video: f.has_video,
+      has_audio: f.has_audio,
+      width: f.width,
+      height: f.height
+    }))
 
-  // 2) Adaptive
-  const adaptive = streamingData?.adaptive_formats ?? []
+    // Adaptive formats
+    const adaptive = (streaming?.adaptive_formats ?? []).map(f => ({
+      itag: f.itag,
+      mime_type: f.mime_type,
+      bitrate: f.bitrate,
+      quality_label: f.quality_label,
+      has_video: f.has_video,
+      has_audio: f.has_audio,
+      width: f.width,
+      height: f.height
+    }))
 
-  // 3) Pick a best muxed format
-  const chosen = FormatUtils.chooseFormat(
-    { quality: 'best', type: 'video+audio', format: 'mp4' },
-    streamingData
-  )
+    // Choose format
+    let chosen = null
+    let signedUrl: string | null = null
 
-  // 4) If format exists, decipher it
-  let url = null
-  if (chosen) {
-    url = await chosen.decipher(yt.session.player)
-  }
+    try {
+      const format = FormatUtils.chooseFormat(
+        { quality: 'best', type: 'video+audio', format: 'mp4' },
+        streaming
+      )
 
-  const result = {
-    title: safeTitle,
-    raw,
-    adaptive,
-    chosenFormat: chosen,
-    signedUrl: url
-  }
+      if (format) {
+        chosen = {
+          itag: format.itag,
+          mime_type: format.mime_type,
+          bitrate: format.bitrate,
+          quality_label: format.quality_label,
+          has_video: format.has_video,
+          has_audio: format.has_audio,
+          width: format.width,
+          height: format.height
+        }
+
+        signedUrl = await format.decipher(yt.session.player)
+      }
+    } catch {}
+
+    const res: StreamResponse = {
+      title: safeTitle
+      raw,
+      adaptive,
+      chosenFormat: chosen,
+      signedUrl
+    }
     // const stream =  await info.download()
-    return new NextResponse(result as any, {
-      headers: {
-        'Content-Disposition': `attachment; filename="${safeTitle}.mp4"`,
-        'Content-Type': 'video/mp4',
-        'Cache-Control': 'no-store',
-      },
-    })
+  return NextResponse.json(res)
 
   } catch (error: any) {
     console.error('[download route error]', error)
@@ -89,7 +136,7 @@ const safeTitle = (basicInfo?.title || videoId)
     _yt = null
 
     return NextResponse.json(
-      { error: error?.message || 'Failed to download video' },
+      { error: error?.message || 'Failed to get Info' },
       { status: 500 }
     )
   }
