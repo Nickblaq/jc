@@ -6,7 +6,7 @@ import {
   getFallbackTopics,
   isYouTubeConfigured,
 } from '@/lib/youtube'
-import { generateId } from '@/lib/youtube'
+import { generateId } from '@/lib/utils'
 import { ContentStrategy, AgentInput, TrendingTopic } from '@/types'
 
 interface StrategyOutput {
