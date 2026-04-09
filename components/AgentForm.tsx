@@ -13,7 +13,7 @@ interface Props {
 export default function AgentForm({ onResult, onLoading }: Props) {
   const [form, setForm] = useState<AgentInput>({
     topic: '',
-    channelNiche: '',
+    niche: '',
     targetAudience: '',
   })
   const [mode, setMode] = useState<Mode>('hosted')
@@ -87,7 +87,7 @@ export default function AgentForm({ onResult, onLoading }: Props) {
           type="text"
           placeholder="e.g. AI development, autonomous systems"
           value={form.channelNiche}
-          onChange={(e) => setForm({ ...form, channelNiche: e.target.value })}
+          onChange={(e) => setForm({ ...form, niche: e.target.value })}
           className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-red-500 transition"
         />
       </div>
