@@ -25,7 +25,7 @@ export interface StreamResponse {
 }
 
 export default function Info() {
-  const [id, setId] = useState('WUF06GYlTLQ') 
+  const [id, setId] = useState('dQw4w9WgXcQ') 
   // dQw4w9WgXcQvalid test ID
   const [error, setError] = useState<string | null>(null)
   const [data, setData] = useState<StreamResponse | null>(null)
