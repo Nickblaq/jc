@@ -71,7 +71,7 @@ export default function LivePage() {
      const params = new URLSearchParams({ id: 'dQw4w9WgXcQ', type: dlType, quality: dlType === 'audio' ? 'best' : dlQuality })
 
     try {
-      const res = await fetch('api/test'
+      const res = await fetch('api/test',
         // `/api/download?${params.toString()}`, 
       {
         signal: abortRef.current.signal,
