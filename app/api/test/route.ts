@@ -32,8 +32,23 @@ export async function GET() {
   try {
     const yt = await getYT()
     const streams = await yt.download(videoId, {itag:18})
+    return new NextResponse(streams, {
+    headers: {
+      'Content-Type': 'video/mp4',
+      'Content-Length': streams.headers.get('content-length') || '',
+      'Accept-Ranges': 'bytes',
+      'Cache-Control': 'no-store',
+    },
+  })
   } catch {
-    
+     console.error('[download route error]', error)
+
+    _yt = null
+
+    return NextResponse.json(
+      { error: error?.message || 'Failed to download video' },
+      { status: 500 }
+    )
   }
 
   
