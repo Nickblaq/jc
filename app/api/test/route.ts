@@ -40,7 +40,7 @@ export async function GET() {
       'Cache-Control': 'no-store',
     },
   })
-  } catch {
+  } catch(error: any) {
      console.error('[download route error]', error)
 
     _yt = null
