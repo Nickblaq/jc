@@ -116,7 +116,7 @@ const safeTitle = (basicInfo?.title || videoId)
     
 
     // 2. Keep chosenFormat clean (no mutation dependency)
-    return chosen = {
+    chosen = {
       itag: format.itag,
       mime_type: format.mime_type,
       bitrate: format.bitrate,
