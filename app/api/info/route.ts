@@ -110,7 +110,7 @@ const safeTitle = (basicInfo?.title || videoId)
   if (format) {
     if (!format.url) {
       format.url = await format.decipher(yt.session.player)
-    } else if {
+    } else if (format.url) {
       signedUrl = format.url
     }
     
