@@ -35,7 +35,7 @@ export async function GET() {
     return new NextResponse(streams, {
     headers: {
       'Content-Type': 'video/mp4',
-      'Content-Length': streams.headers.get('content-length') || '',
+      //'Content-Length': streams.headers.get('content-length') || '',
       'Accept-Ranges': 'bytes',
       'Cache-Control': 'no-store',
     },
