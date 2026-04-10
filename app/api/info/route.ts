@@ -104,6 +104,7 @@ const safeTitle = (basicInfo?.title || videoId)
         info.streaming_data
       )
       
+      signedUrl = await format.decipher(yt.session.player)
 
       if (format) {
         
@@ -121,7 +122,7 @@ const safeTitle = (basicInfo?.title || videoId)
         }
       
     } catch {}
-      signedUrl = await format.decipher(yt.session.player)
+      
     
     const res: StreamResponse = {
       title: safeTitle,
