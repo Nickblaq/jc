@@ -32,6 +32,7 @@ async function getYT(): Promise<Innertube> {
     _yt = await Innertube.create({
       cache: new UniversalCache(false),
       generate_session_locally: true,
+      client_type: 'IOS'
     })
   }
   return _yt
@@ -54,7 +55,7 @@ export async function GET(req: NextRequest) {
   
 
 
-    const info = await yt.getInfo(videoId as string, { client: 'WEB' })
+    const info = await yt.getInfo(videoId as string)
      if (!info) {
       return NextResponse.json({ error: 'Failed to get Info' }, { status: 400 })
     }
@@ -120,7 +121,8 @@ const safeTitle = (basicInfo?.title || videoId)
         }
       
     } catch {}
- 
+      signedUrl = await format.decipher(yt.session.player)
+    
     const res: StreamResponse = {
       title: safeTitle,
       raw,
