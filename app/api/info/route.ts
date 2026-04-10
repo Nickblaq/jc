@@ -1,11 +1,8 @@
-
 import { NextRequest, NextResponse } from 'next/server'
 import { Innertube, UniversalCache, FormatUtils } from 'youtubei.js'
 
 export const runtime = 'nodejs'
 export const maxDuration = 300
-
-// types/stream.ts
 
 export interface StreamFormat {
   itag: number
@@ -33,7 +30,6 @@ let _yt: Innertube | null = null
 async function getYT(): Promise<Innertube> {
   if (!_yt) {
     _yt = await Innertube.create({
-     // client_type: "ANDROID" as any,
       cache: new UniversalCache(false),
       generate_session_locally: true,
     })
@@ -58,9 +54,9 @@ export async function GET(req: NextRequest) {
   
 
 
-    const info = await yt.getInfo(videoId as string, { client: 'WEBM' })
+    const info = await yt.getInfo(videoId as string, { client: 'TV' })
      if (!info) {
-      return NextResponse.json({ error: 'Failed to get download stream' }, { status: 400 })
+      return NextResponse.json({ error: 'Failed to get Info' }, { status: 400 })
     }
 
 const basicInfo = info.basic_info
@@ -80,8 +76,7 @@ const safeTitle = (basicInfo?.title || videoId)
       has_video: f.has_video,
       has_audio: f.has_audio,
       width: f.width,
-      height: f.height,
-      url: f.url
+      height: f.height
     }))
 
     // Adaptive formats
@@ -93,8 +88,7 @@ const safeTitle = (basicInfo?.title || videoId)
       has_video: f.has_video,
       has_audio: f.has_audio,
       width: f.width,
-      height: f.height,
-      url: f.url
+      height: f.height
     }))
 
     // Choose format
@@ -102,37 +96,29 @@ const safeTitle = (basicInfo?.title || videoId)
     let signedUrl: string | null = null
 
     try {
-  const format = FormatUtils.chooseFormat(
-    { quality: 'best', type: 'video+audio', format: 'mp4' },
-    info.streaming_data
-  )
+      const format = FormatUtils.chooseFormat(
+        { quality: 'best', type: 'video+audio', format: 'mp4' },
+        info.streaming_data
+      )
+      
 
-  if (format) {
-    if (!format.url) {
-      format.url = await format.decipher(yt.session.player)
-    } else if (format.url) {
-      signedUrl = format.url
-    }
-    
-
-    // 2. Keep chosenFormat clean (no mutation dependency)
-    chosen = {
-      itag: format.itag,
-      mime_type: format.mime_type,
-      bitrate: format.bitrate,
-      quality_label: format.quality_label,
-      has_video: format.has_video,
-      has_audio: format.has_audio,
-      width: format.width,
-      height: format.height,
-      url: format.url
-      // ⚠️ intentionally NOT binding signedUrl here
-    }
-  }
-} catch (e) {
-  console.warn('Decipher failed:', e)
-}
-
+      if (format) {
+        
+        chosen = {
+          itag: format.itag,
+          mime_type: format.mime_type,
+          bitrate: format.bitrate,
+          quality_label: format.quality_label,
+          has_video: format.has_video,
+          has_audio: format.has_audio,
+          width: format.width,
+          height: format.height,
+          //url: format.url = await format.decipher(yt.session.player)
+        }
+        }
+      
+    } catch {}
+ 
     const res: StreamResponse = {
       title: safeTitle,
       raw,
@@ -140,11 +126,11 @@ const safeTitle = (basicInfo?.title || videoId)
       chosenFormat: chosen,
       signedUrl
     }
-    // const stream =  await info.download()
+   
   return NextResponse.json(res)
 
   } catch (error: any) {
-    console.error('[download route error]', error)
+    console.error('[route error]', error)
 
     _yt = null
 
@@ -154,4 +140,3 @@ const safeTitle = (basicInfo?.title || videoId)
     )
   }
 }
-
