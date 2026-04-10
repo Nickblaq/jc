@@ -31,8 +31,8 @@ async function getYT(): Promise<Innertube> {
   if (!_yt) {
     _yt = await Innertube.create({
       cache: new UniversalCache(false),
-      generate_session_locally: true,
-      ClientType: 'IOS'
+      generate_session_locally: false,
+      //ClientType: 'IOS'
     })
   }
   return _yt
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
   
 
 
-    const info = await yt.getInfo(videoId as string)
+    const info = await yt.getInfo(videoId as string,{ client: 'MWEB' } )
      if (!info) {
       return NextResponse.json({ error: 'Failed to get Info' }, { status: 400 })
     }
