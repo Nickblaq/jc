@@ -21,8 +21,8 @@ async function getYT(): Promise<Innertube> {
 
 export async function GET() {
   // Fetch static file from your own server
-  // dQw4w9WgXcQ
-  const videoId = ''
+  // 
+  const videoId = 'dQw4w9WgXcQ'
  // const res = await fetch('https://jc-ashy-kappa.vercel.app/ppg.mp4')
 
   if (!videoId) {
