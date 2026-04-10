@@ -13,6 +13,7 @@ export interface StreamFormat {
   has_audio: boolean
   width?: number
   height?: number
+  url?: string
 }
 
 export interface StreamResponse {
@@ -171,6 +172,10 @@ function FormatCard({
         {f.width && f.height && (
           <div className='text-white font-bold text-xl'><b>Resolution:</b> {f.width}x{f.height}</div>
         )}
+        {f.url && (
+          <p className='text-white text-sm truncate'>LINK: -{f.url}</p>
+        )}
+        
       </div>
     </div>
   )
