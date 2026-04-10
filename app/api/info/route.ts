@@ -126,7 +126,7 @@ const safeTitle = (basicInfo?.title || videoId)
       has_audio: format.has_audio,
       width: format.width,
       height: format.height,
-      url
+      url: format.url
       // ⚠️ intentionally NOT binding signedUrl here
     }
   }
