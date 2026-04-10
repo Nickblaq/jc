@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
   
 
 
-    const info = await yt.getInfo(videoId as string, { client: 'TV' })
+    const info = await yt.getInfo(videoId as string, { client: 'WEBM' })
      if (!info) {
       return NextResponse.json({ error: 'Failed to get download stream' }, { status: 400 })
     }
@@ -108,16 +108,15 @@ const safeTitle = (basicInfo?.title || videoId)
   )
 
   if (format) {
-    // IMPORTANT: do not mutate format.url
-        const url = format.url
-          ? format.url
-          : format.decipher
-          ? await format.decipher(yt.session.player)
-          :null
-    signedUrl = url
+    if (!format.url) {
+      format.url = await format.decipher(yt.session.player)
+    } else if {
+      signedUrl = format.url
+    }
+    
 
     // 2. Keep chosenFormat clean (no mutation dependency)
-    chosen = {
+    return chosen = {
       itag: format.itag,
       mime_type: format.mime_type,
       bitrate: format.bitrate,
