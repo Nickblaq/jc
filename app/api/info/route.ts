@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
   
 
 
-    const info = await yt.getInfo(videoId as string, { client: 'WEBM' })
+    const info = await yt.getInfo(videoId as string, { client: 'WEB' })
      if (!info) {
       return NextResponse.json({ error: 'Failed to get Info' }, { status: 400 })
     }
