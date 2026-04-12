@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
         // In production: Use ffmpeg.wasm or similar for accurate segment extraction
         const segment = extractVideoSegment(buffer, startTime, endTime);
         
-        return new NextResponse(segment, {
+        return new NextResponse(segment as any, {
           headers: {
             'Content-Type': 'video/mp4',
             'Content-Disposition': 'attachment; filename="segment.mp4"'
@@ -42,11 +42,26 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function extractVideoSegment(buffer: Buffer, startTime: number, endTime: number): Buffer {
-  // Simplified - actual implementation needs proper MP4 parsing
-  const bytesPerSecond = buffer.length / 60;
-  const startByte = Math.floor(startTime * bytesPerSecond);
-  const endByte = Math.floor(endTime * bytesPerSecond);
-  
-  return buffer.subarray(startByte, endByte);
+async function extractVideoSegmentDynamic(
+  buffer: Buffer,
+  tempPath: string,
+  startTime: number,
+  endTime: number
+): Promise<Buffer> {
+  const duration = await getDuration(tempPath)
+
+  const bytesPerSecond = buffer.length / duration
+
+  const startByte = Math.floor(startTime * bytesPerSecond)
+  const endByte   = Math.floor(endTime   * bytesPerSecond)
+
+  return buffer.subarray(startByte, endByte)
 }
+
+// function extractVideoSegment(buffer: Buffer, startTime: number, endTime: number): Buffer {
+  // Simplified - actual implementation needs proper MP4 parsing
+  // const bytesPerSecond = buffer.length / 60;
+  // const startByte = Math.floor(startTime * bytesPerSecond);
+  // const endByte = Math.floor(endTime * bytesPerSecond);
+  // return buffer.subarray(startByte, endByte);
+// }
