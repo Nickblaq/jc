@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         const endTime = parseFloat(formData.get('endTime') as string);
         
         // In production: Use ffmpeg.wasm or similar for accurate segment extraction
-        const segment = extractVideoSegment(buffer, startTime, endTime);
+        const segment = extractVideoSegmentDynamic(buffer, startTime, endTime);
         
         return new NextResponse(segment as any, {
           headers: {
