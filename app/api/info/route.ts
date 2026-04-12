@@ -31,7 +31,7 @@ async function getYT(): Promise<Innertube> {
   if (!_yt) {
     _yt = await Innertube.create({
       cache: new UniversalCache(false),
-      generate_session_locally: false,
+      generate_session_locally: true,
       //ClientType: 'IOS'
     })
   }
