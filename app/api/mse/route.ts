@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 
 
  function extractVideoSegment(buffer: Buffer, startTime: number, endTime: number): Buffer {
-   Simplified - actual implementation needs proper MP4 parsing
+  // Simplified - actual implementation needs proper MP4 parsing
    const bytesPerSecond = buffer.length / 60;
    const startByte = Math.floor(startTime * bytesPerSecond);
    const endByte = Math.floor(endTime * bytesPerSecond);
