@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         const endTime = parseFloat(formData.get('endTime') as string);
         
         // In production: Use ffmpeg.wasm or similar for accurate segment extraction
-        const segment = extractVideoSegmentDynamic(buffer, startTime, endTime);
+        const segment = extractVideoSegment(buffer, startTime, endTime);
         
         return new NextResponse(segment as any, {
           headers: {
@@ -42,26 +42,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function extractVideoSegmentDynamic(
-  buffer: Buffer,
-  tempPath: string,
-  startTime: number,
-  endTime: number
-): Promise<Buffer> {
-  const duration = await getDuration(tempPath)
 
-  const bytesPerSecond = buffer.length / duration
-
-  const startByte = Math.floor(startTime * bytesPerSecond)
-  const endByte   = Math.floor(endTime   * bytesPerSecond)
-
-  return buffer.subarray(startByte, endByte)
-}
-
-// function extractVideoSegment(buffer: Buffer, startTime: number, endTime: number): Buffer {
-  // Simplified - actual implementation needs proper MP4 parsing
-  // const bytesPerSecond = buffer.length / 60;
-  // const startByte = Math.floor(startTime * bytesPerSecond);
-  // const endByte = Math.floor(endTime * bytesPerSecond);
-  // return buffer.subarray(startByte, endByte);
-// }
+ function extractVideoSegment(buffer: Buffer, startTime: number, endTime: number): Buffer {
+   Simplified - actual implementation needs proper MP4 parsing
+   const bytesPerSecond = buffer.length / 60;
+   const startByte = Math.floor(startTime * bytesPerSecond);
+   const endByte = Math.floor(endTime * bytesPerSecond);
+   return buffer.subarray(startByte, endByte);
+ }
