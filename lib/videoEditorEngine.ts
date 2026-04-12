@@ -941,7 +941,7 @@ export class MSEVideoEditorEngine {
     this.mediaSource.endOfStream();
 
     // Use MediaRecorder to capture the final output
-    const stream = this.videoElement.captureStream();
+    const stream = (this.videoElement as any).captureStream();
     const mediaRecorder = new MediaRecorder(stream, {
       mimeType: options.format === 'webm' ? 'video/webm;codecs=vp9' : 'video/mp4',
       videoBitsPerSecond: options.quality * 1000000
