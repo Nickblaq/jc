@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
      if (!info) {
       return NextResponse.json({ error: 'Failed to get Info' }, { status: 400 })
     }
-const streamUrl = await info.
+// const streamUrl = await info.
 const basicInfo = info.basic_info
 const safeTitle = (basicInfo?.title || videoId)
   .replace(/[^\w\s\-().]/g, '')  // strip special chars for filename
