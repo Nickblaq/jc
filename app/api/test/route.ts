@@ -14,6 +14,7 @@ async function getYT(): Promise<Innertube> {
      // client_type: "ANDROID" as any,
       cache: new UniversalCache(false),
       generate_session_locally: true,
+      retrieve_player: true,
     })
   }
   return _yt
