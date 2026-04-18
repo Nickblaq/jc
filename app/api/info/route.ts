@@ -18,6 +18,7 @@ export interface StreamFormat {
 
 export interface StreamResponse {
   title: string
+  trans?: numeber 
   raw: StreamFormat[]
   adaptive: StreamFormat[]
   chosenFormat: StreamFormat | null
@@ -26,6 +27,7 @@ export interface StreamResponse {
 
 // Singleton
 let _yt: Innertube | null = null
+let defaultTranscriptInfo = null
 
 async function getYT(): Promise<Innertube> {
   if (!_yt) {
@@ -60,6 +62,8 @@ export async function GET(req: NextRequest) {
      if (!info) {
       return NextResponse.json({ error: 'Failed to get Info' }, { status: 400 })
     }
+
+    defaultTranscriptInfo = await info.getTranscript();
 // const streamUrl = await info.
 const basicInfo = info.basic_info
 const safeTitle = (basicInfo?.title || videoId)
@@ -127,6 +131,7 @@ const safeTitle = (basicInfo?.title || videoId)
     
     const res: StreamResponse = {
       title: safeTitle,
+      trans: defaultTranscriptInfo || 0
       raw,
       adaptive,
       chosenFormat: chosen,
