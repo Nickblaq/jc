@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
      if (!info) {
       return NextResponse.json({ error: 'Failed to get Info' }, { status: 400 })
     }
-
+const streamUrl = await info.
 const basicInfo = info.basic_info
 const safeTitle = (basicInfo?.title || videoId)
   .replace(/[^\w\s\-().]/g, '')  // strip special chars for filename
@@ -101,8 +101,8 @@ const safeTitle = (basicInfo?.title || videoId)
 
     try {
       const format = FormatUtils.chooseFormat(
-        { quality: 'best', type: 'video+audio', format: 'mp4' },
-        info.streaming_data
+        // { quality: 'best', type: 'video+audio', format: 'mp4' },
+        info
       )
       
       signedUrl = await format.decipher(yt.session.player)
