@@ -5,6 +5,8 @@ import { Innertube, UniversalCache } from 'youtubei.js'
 export const runtime = 'nodejs'
 export const maxDuration = 300
 
+const cookieString = "SAPISID=vXaQnxHEX0LhP1if/APht3EL43tus29axQ";
+
 // Singleton
 let _yt: Innertube | null = null
 
@@ -12,9 +14,10 @@ async function getYT(): Promise<Innertube> {
   if (!_yt) {
     _yt = await Innertube.create({
      // client_type: "ANDROID" as any,
+      cookie: cookieString,
       cache: new UniversalCache(false),
       generate_session_locally: true,
-      retrieve_player: true,
+      // retrieve_player: true,
     })
   }
   return _yt
