@@ -18,7 +18,7 @@ export interface StreamFormat {
 
 export interface StreamResponse {
   title: string
-  trans?: numeber 
+  trans?: number 
   raw: StreamFormat[]
   adaptive: StreamFormat[]
   chosenFormat: StreamFormat | null
