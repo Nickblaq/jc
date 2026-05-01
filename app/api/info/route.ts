@@ -130,7 +130,7 @@ const safeTitle = (basicInfo?.title || videoId)
     
     const res: StreamResponse = {
       title: safeTitle,
-      trans: defaultTranscriptInfo || 0,
+   //   trans: defaultTranscriptInfo || 0,
       raw,
       adaptive,
       chosenFormat: chosen,
