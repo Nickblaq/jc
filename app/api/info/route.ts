@@ -105,8 +105,7 @@ const safeTitle = (basicInfo?.title || videoId)
 
     try {
       const format = FormatUtils.chooseFormat(
-        // { quality: 'best', type: 'video+audio', format: 'mp4' },
-        info
+         { quality: 'best', type: 'video+audio', format: 'mp4' },
       )
       
       signedUrl = await format.decipher(yt.session.player)
